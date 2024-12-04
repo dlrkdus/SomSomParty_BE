@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 public class FcmToken {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int fcmTokenId; // id
+    private Long fcmTokenId; // id
 
     private String fcmToken;    // fcm 토큰
 
