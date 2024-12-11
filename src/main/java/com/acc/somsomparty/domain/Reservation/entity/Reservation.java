@@ -1,7 +1,7 @@
 package com.acc.somsomparty.domain.Reservation.entity;
 
 import com.acc.somsomparty.domain.Festival.entity.Festival;
-import com.acc.somsomparty.domain.Festival.enums.ReservationStatus;
+import com.acc.somsomparty.domain.Reservation.enums.ReservationStatus;
 import com.acc.somsomparty.domain.User.entity.User;
 import com.acc.somsomparty.global.common.BaseEntity;
 import jakarta.persistence.*;
