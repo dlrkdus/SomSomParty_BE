@@ -12,8 +12,6 @@ public enum ErrorCode {
     BAD_REQUEST(HttpStatus.BAD_REQUEST, "잘못된 요청입니다."),
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "인증이 필요합니다."),
     PERMISSION_DENIED(HttpStatus.FORBIDDEN, "권한이 없습니다."),
-    // User
-    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 사용자입니다."),
     // Festival
     FESTIVAL_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 축제입니다."),
     // Queue
