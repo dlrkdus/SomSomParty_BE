@@ -13,7 +13,7 @@ public class NotificationController {
     private final NotificationService notificationService;
 
     // aws sns로 축제 알림 전송
-    @PostMapping("/festival/notification")
+    @PostMapping("/festivals/notification")
     public ResponseEntity<Object> sendNotification() {  // AWS SNS를 통해 알림 전송
         notificationService.setAWSSNSForFestival();
         return new ResponseEntity<>(HttpStatus.OK);
