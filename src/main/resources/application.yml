@@ -18,8 +18,9 @@ spring:
         default_batch_fetch_size: 1000
 
 aws:
-  accessKey: ${ACCESS_KEY}
-  secretKey: ${SECRET_KEY}
-  region: ${REGION}
+  noti:
+    accessKey: ${NOTI_ACCESS_KEY}
+    secretKey: ${NOTI_SECRET_KEY}
+    region: ${NOTI_REGION}
   sns:
-    application-arn: ${ARN}
+    application-arn: ${SNS_APP_ARN}
