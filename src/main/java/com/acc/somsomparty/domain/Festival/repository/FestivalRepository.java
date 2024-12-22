@@ -13,8 +13,8 @@ public interface FestivalRepository extends JpaRepository<Festival, Long> {
     Page<Festival> findAllByOrderByCreatedAtDesc(Pageable pageable);
     Page<Festival> findByCreatedAtLessThanOrderByCreatedAtDesc(LocalDateTime createdAt, Pageable pageable);
 
-    @Query("SELECT f FROM Festival f WHERE (LOWER(f.name) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
-            "OR LOWER(f.description) LIKE LOWER(CONCAT('%', :keyword, '%'))) " +
+    @Query("SELECT f FROM Festival f WHERE (f.nameLower LIKE CONCAT('%', :keyword, '%') " +
+            "OR f.descriptionLower LIKE CONCAT('%', :keyword, '%')) " +
             "AND (:lastId = 0 OR f.id < :lastId) " +
             "ORDER BY f.id DESC")
     List<Festival> searchByKeyword(Long lastId, int limit, String keyword);

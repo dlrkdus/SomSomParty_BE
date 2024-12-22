@@ -48,7 +48,7 @@ public class FestivalQueryServiceImpl implements FestivalQueryService {
     @Override
     public FestivalResponseDTO.FestivalPreViewListDTO searchFestival(Long lastId, int limit, String keyword) {
         // Redis 캐시 키 생성
-        String cacheKey = "festival::search::" + keyword + "::" + lastId + "::" + limit;
+        String cacheKey = "festival::search::" + keyword.toLowerCase() + "::" + lastId + "::" + limit;
 
         Object cachedResult = redisTemplate.opsForValue().get(cacheKey);
 
@@ -58,7 +58,7 @@ public class FestivalQueryServiceImpl implements FestivalQueryService {
         }
 
         // 캐시에 없으면 DB에서 검색
-        List<Festival> festivals = festivalRepository.searchByKeyword(lastId, limit, keyword);
+        List<Festival> festivals = festivalRepository.searchByKeyword(lastId, limit, keyword.toLowerCase());
         FestivalResponseDTO.FestivalPreViewListDTO responseDTO = generateFestivalPreviewListDTO(festivals, limit);
 
         // Redis에 결과 캐싱 (TTL 10분 설정)
