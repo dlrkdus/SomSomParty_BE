@@ -50,4 +50,9 @@ public class RedisConfig {
 
         return redisTemplate;
     }
+
+    @Bean
+    public ReactiveRedisTemplate<String, String> reactiveRedisTemplate(ReactiveRedisConnectionFactory factory) {
+        return new ReactiveRedisTemplate<>(factory, RedisSerializationContext.string());
+    }
 }
