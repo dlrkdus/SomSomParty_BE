@@ -16,12 +16,18 @@ spring:
         hbm2ddl:
           auto: update
         default_batch_fetch_size: 1000
+  data:
+    redis:
+      #      host: ${elastiCache_endPoint}
+      host: 127.0.0.1
+      port: 6379
   cloud:
     aws:
-      region: ${AWS_REGION}
-      access-key: ${AWS_ACCESS_KEY_ID}
-      secret-key: ${AWS_SECRET_ACCESS_KEY}
+      queue:
+        region: ${QUEUE_REGION}
+        access-key: ${QUEUE_ACCESS_KEY}
+        secret-key: ${QUEUE_SECRET_KEY}
       sqs:
-        queue-name: ${AWS_SQS_QUEUE_NAME}
+        queue-name: ${SQS_QUEUE_NAME}
     stack:
       auto: false
