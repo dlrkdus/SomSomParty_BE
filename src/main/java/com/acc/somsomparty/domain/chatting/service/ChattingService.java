@@ -65,20 +65,16 @@ public class ChattingService {
 
             SdkIterable<Page<Message>> pages = messageRepository.query(queryBuilder.build());
 
-            // 각 페이지에서 메시지 추출
-            List<Message> messages = pages.stream()
-                    .flatMap(page -> page.items().stream())
-                    .collect(Collectors.toList());
-
-            // 마지막 키 계산
-            Map<String, AttributeValue> lastKey = pages.stream()
-                    .reduce((first, second) -> second) // 마지막 페이지 찾기
-                    .map(Page::lastEvaluatedKey)
-                    .orElse(null);
-
+            List<Message> messages = new ArrayList<>();
             Long newLastEvaluatedSendTime = null;
-            if (lastKey != null && lastKey.containsKey("sendTime")) {
-                newLastEvaluatedSendTime = Long.valueOf(lastKey.get("sendTime").n());
+
+            for (Page<Message> page : pages) {
+                messages.addAll(page.items());
+                // 마지막 키를 페이지의 마지막으로 갱신
+                Map<String, AttributeValue> lastKey = page.lastEvaluatedKey();
+                if (lastKey != null && lastKey.containsKey("sendTime")) {
+                    newLastEvaluatedSendTime = Long.valueOf(lastKey.get("sendTime").n());
+                }
             }
 
             return new MessageListResponse(messages, newLastEvaluatedSendTime);
