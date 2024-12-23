@@ -7,7 +7,8 @@ import lombok.Builder;
 @Builder
 public record MessageDto(
         Long chatRoomId,
-        String userName,
+        Long senderId,
+        String senderName,
         LocalDateTime createdAt,
         String content
 ) {
