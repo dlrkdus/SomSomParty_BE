@@ -13,7 +13,15 @@ public enum ErrorCode {
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "인증이 필요합니다."),
     PERMISSION_DENIED(HttpStatus.FORBIDDEN, "권한이 없습니다."),
     // Festival
-    FESTIVAL_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 축제입니다.");
+    FESTIVAL_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 축제입니다."),
+    // Queue
+    QUEUE_ALREADY_REGISTERED_USER(HttpStatus.CONFLICT, "이미 큐에 등록된 유저입니다."),
+    LOCK_ACQUISITION_FAILED(HttpStatus.BAD_REQUEST, "락을 획득할 수 없습니다."),
+    // User
+    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 사용자입니다."),
+    // Ticket
+    TICKET_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 티켓입니다."),
+    TICKET_SOLD_OUT(HttpStatus.BAD_REQUEST, "남아있는 티켓이 없습니다.");
 
     private final HttpStatus httpStatus;    // HttpStatus
     private final String message;       // 설명

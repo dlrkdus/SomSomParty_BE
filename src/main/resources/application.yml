@@ -1,7 +1,7 @@
 spring:
   datasource:
     url: ${DB_URL}
-#    url: jdbc:mysql://localhost:3306/acc
+    #    url: jdbc:mysql://localhost:3306/acc
     username: ${DB_USER}
     password: ${DB_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -16,9 +16,18 @@ spring:
         hbm2ddl:
           auto: update
         default_batch_fetch_size: 1000
-
   data:
     redis:
-#      host: ${elastiCache_endPoint}
+      #      host: ${elastiCache_endPoint}
       host: 127.0.0.1
       port: 6379
+  cloud:
+    aws:
+      queue:
+        region: ${QUEUE_REGION}
+        access-key: ${QUEUE_ACCESS_KEY}
+        secret-key: ${QUEUE_SECRET_KEY}
+      sqs:
+        queue-name: ${SQS_QUEUE_NAME}
+    stack:
+      auto: false
