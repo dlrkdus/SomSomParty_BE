@@ -23,7 +23,7 @@ public class KafkaConsumerService {
      *                대신, Kafka 의 ConsumerRecord 를 활용하면 메시지와 Key 를 동시에 처리할 수 있다.
      */
     @KafkaListener(topics = "chat-topic", groupId = "consumer-group-websocket")
-    public void consume(ConsumerRecord<String, String> record) {
+    public void websocketConsumer(ConsumerRecord<String, String> record) {
         String key = record.key();
         String message = record.value();
 

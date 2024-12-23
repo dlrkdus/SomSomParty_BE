@@ -1,6 +1,7 @@
 package com.acc.somsomparty.domain.chatting.service;
 
 import com.acc.somsomparty.domain.chatting.dto.ChatRoomCreateEvent;
+import com.acc.somsomparty.domain.chatting.dto.MessageListResponse;
 import com.acc.somsomparty.domain.chatting.entity.Message;
 import com.acc.somsomparty.domain.chatting.repository.dynamodb.MessageRepository;
 import com.acc.somsomparty.global.exception.CustomException;
@@ -46,16 +47,15 @@ public class ChattingService {
         }
     }
 
-    public List<Message> getMessages(Long chatRoomId, Long lastEvaluatedSendTime, int limit) {
+    public MessageListResponse getMessages(Long chatRoomId, Long lastEvaluatedSendTime, int limit) {
         try {
             QueryEnhancedRequest.Builder queryBuilder = QueryEnhancedRequest.builder()
                     .queryConditional(QueryConditional.keyEqualTo(Key.builder()
                             .partitionValue(chatRoomId)
                             .build()))
-                    .limit(limit) // 한 번에 조회할 메시지 개수
+                    .limit(limit)
                     .scanIndexForward(false); // 최신 메시지부터 조회
 
-            // 커서가 존재하면 exclusiveStartKey 설정
             if (lastEvaluatedSendTime != null) {
                 queryBuilder.exclusiveStartKey(Map.of(
                         "chatRoomId", AttributeValue.builder().n(chatRoomId.toString()).build(),
@@ -64,10 +64,24 @@ public class ChattingService {
             }
 
             SdkIterable<Page<Message>> pages = messageRepository.query(queryBuilder.build());
-            log.info("메세지 조회 완료: {}", pages);
-            return pages.stream()
-                    .flatMap(page -> page.items().stream()) // 각 페이지에서 메시지를 가져옴
+
+            // 각 페이지에서 메시지 추출
+            List<Message> messages = pages.stream()
+                    .flatMap(page -> page.items().stream())
                     .collect(Collectors.toList());
+
+            // 마지막 키 계산
+            Map<String, AttributeValue> lastKey = pages.stream()
+                    .reduce((first, second) -> second) // 마지막 페이지 찾기
+                    .map(Page::lastEvaluatedKey)
+                    .orElse(null);
+
+            Long newLastEvaluatedSendTime = null;
+            if (lastKey != null && lastKey.containsKey("sendTime")) {
+                newLastEvaluatedSendTime = Long.valueOf(lastKey.get("sendTime").n());
+            }
+
+            return new MessageListResponse(messages, newLastEvaluatedSendTime);
 
         } catch (Exception e) {
             log.error("메세지 조회 실패: {}", e.getMessage(), e);

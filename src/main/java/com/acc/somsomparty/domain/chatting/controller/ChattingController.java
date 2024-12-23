@@ -1,6 +1,7 @@
 package com.acc.somsomparty.domain.chatting.controller;
 
 import com.acc.somsomparty.domain.chatting.dto.MessageDto;
+import com.acc.somsomparty.domain.chatting.dto.MessageListResponse;
 import com.acc.somsomparty.domain.chatting.entity.Message;
 import com.acc.somsomparty.domain.chatting.service.ChattingService;
 import com.acc.somsomparty.domain.chatting.service.KafkaProducerService;
@@ -45,11 +46,11 @@ public class ChattingController {
             @Parameter(name = "limit", description = "페이지당 컨텐츠 개수")
     })
     @GetMapping("/{chatRoomId}")
-    public ResponseEntity<List<Message>> getMessages(
+    public ResponseEntity<MessageListResponse> getMessages(
             @PathVariable Long chatRoomId,
             @RequestParam(required = false) Long lastEvaluatedSendTime,
             @RequestParam(defaultValue = "10") int limit) {
-            List<Message> messages = chattingService.getMessages(chatRoomId, lastEvaluatedSendTime, limit);
+            MessageListResponse messages = chattingService.getMessages(chatRoomId, lastEvaluatedSendTime, limit);
             return ResponseEntity.ok(messages);
     }
 }
