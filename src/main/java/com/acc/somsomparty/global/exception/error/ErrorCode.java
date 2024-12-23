@@ -15,7 +15,8 @@ public enum ErrorCode {
     // Festival
     FESTIVAL_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 축제입니다."),
     // Queue
-    QUEUE_ALREADY_REGISTERED_USER(HttpStatus.CONFLICT, "이미 큐에 등록된 유저입니다.");
+    QUEUE_ALREADY_REGISTERED_USER(HttpStatus.CONFLICT, "이미 큐에 등록된 유저입니다."),
+    LOCK_ACQUISITION_FAILED(HttpStatus.BAD_REQUEST, "락을 획득할 수 없습니다.");
 
     private final HttpStatus httpStatus;    // HttpStatus
     private final String message;       // 설명
