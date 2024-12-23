@@ -19,3 +19,18 @@ spring:
       region: ap-northeast-2
       access-key: ${AWS_ACCESS_KEY_ID}
       secret-key: ${AWS_SECRET_ACCESS_KEY}
+  data:
+    redis:
+      #      host: ${elastiCache_endPoint}
+      host: 127.0.0.1
+      port: 6379
+  cloud:
+    aws:
+      queue:
+        region: ${QUEUE_REGION}
+        access-key: ${QUEUE_ACCESS_KEY}
+        secret-key: ${QUEUE_SECRET_KEY}
+      sqs:
+        queue-name: ${SQS_QUEUE_NAME}
+    stack:
+      auto: false
