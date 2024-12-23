@@ -1,7 +1,6 @@
 package com.acc.somsomparty.domain.Queue.service;
 
 import com.acc.somsomparty.domain.Queue.config.SqsSender;
-import com.acc.somsomparty.global.common.aspect.DistributedLock;
 import com.acc.somsomparty.global.exception.CustomException;
 import com.acc.somsomparty.global.exception.error.ErrorCode;
 import io.awspring.cloud.sqs.annotation.SqsListener;
