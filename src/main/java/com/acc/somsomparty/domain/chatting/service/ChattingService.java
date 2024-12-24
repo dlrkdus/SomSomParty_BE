@@ -1,6 +1,6 @@
 package com.acc.somsomparty.domain.chatting.service;
 
-import com.acc.somsomparty.domain.chatting.dto.ChatRoomCreateEvent;
+import com.acc.somsomparty.domain.Festival.entity.Festival;
 import com.acc.somsomparty.domain.chatting.dto.MessageListResponse;
 import com.acc.somsomparty.domain.chatting.entity.Message;
 import com.acc.somsomparty.domain.chatting.repository.dynamodb.MessageRepository;
@@ -9,7 +9,6 @@ import com.acc.somsomparty.global.exception.error.ErrorCode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
@@ -29,12 +28,8 @@ public class ChattingService {
     private final MessageRepository messageRepository;
     private final ApplicationEventPublisher applicationEventPublisher;
 
-    public void publishCreateChatRoom(Long festivalId, String festivalName){
-        ChatRoomCreateEvent event = ChatRoomCreateEvent.builder()
-                .festivalId(festivalId)
-                .festivalName(festivalName)
-                .build();
-        applicationEventPublisher.publishEvent(event);
+    public void publishCreateChatRoom(Festival festival) {
+        applicationEventPublisher.publishEvent(festival);
     }
 
     public void saveMessage(Message message) {
