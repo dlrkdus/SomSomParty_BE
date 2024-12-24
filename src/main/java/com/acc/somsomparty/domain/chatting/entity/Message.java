@@ -1,7 +1,6 @@
 package com.acc.somsomparty.domain.chatting.entity;
 
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
+import lombok.Setter;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,6 +11,7 @@ import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbSortK
 
 
 @Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -22,7 +22,7 @@ public class Message {
     private Long senderId;  // 보낸 사람 ID
     private String senderName; // 보낸 사람 이름
     private Long chatRoomId; // 채팅방 ID
-    private LocalDateTime sendTime;
+    private Long sendTime;
 
     @DynamoDbPartitionKey
     public Long getChatRoomId() {
@@ -31,7 +31,7 @@ public class Message {
 
     @DynamoDbSortKey
     public Long getSendTime() {
-        return sendTime.toEpochSecond(ZoneOffset.UTC);
+        return sendTime;
     }
 
 }
