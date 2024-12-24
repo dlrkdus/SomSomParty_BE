@@ -1,19 +1,26 @@
 package com.acc.somsomparty.domain.chatting.service;
 
 import com.acc.somsomparty.domain.Festival.entity.Festival;
+import com.acc.somsomparty.domain.User.entity.User;
+import com.acc.somsomparty.domain.User.repository.UserRepository;
+import com.acc.somsomparty.domain.chatting.dto.UserChatRoomListDto;
 import com.acc.somsomparty.domain.chatting.dto.MessageListResponse;
+import com.acc.somsomparty.domain.chatting.entity.ChatRoom;
 import com.acc.somsomparty.domain.chatting.entity.Message;
+import com.acc.somsomparty.domain.chatting.entity.UserChatRoom;
 import com.acc.somsomparty.domain.chatting.repository.dynamodb.MessageRepository;
+import com.acc.somsomparty.domain.chatting.repository.jpa.ChatRoomRepository;
+import com.acc.somsomparty.domain.chatting.repository.jpa.UserChatRoomRepository;
 import com.acc.somsomparty.global.exception.CustomException;
 import com.acc.somsomparty.global.exception.error.ErrorCode;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
-import software.amazon.awssdk.core.pagination.sync.SdkIterable;
+import org.springframework.transaction.annotation.Transactional;
 import software.amazon.awssdk.enhanced.dynamodb.Key;
 import software.amazon.awssdk.enhanced.dynamodb.model.Page;
 import software.amazon.awssdk.enhanced.dynamodb.model.QueryConditional;
@@ -26,18 +33,21 @@ import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 public class ChattingService {
 
     private final MessageRepository messageRepository;
+    private final UserRepository userRepository;
+    private final ChatRoomRepository chatRoomRepository;
+    private final UserChatRoomRepository userChatRoomRepository;
     private final ApplicationEventPublisher applicationEventPublisher;
 
     public void publishCreateChatRoom(Festival festival) {
         applicationEventPublisher.publishEvent(festival);
     }
 
-    public void saveMessage(Message message) {
+    public void save(Message message) {
         try {
             messageRepository.save(message);
             log.info("메세지 저장: {}", message);
         } catch (Exception e) {
-            log.error("메세지 저장 실패: {}", message);
+            log.error("메세지 저장 실패: {}, 예외: {}", message, e.getMessage(), e);
             throw new CustomException(ErrorCode.FAILED_MESSAGE_SAVE);
         }
     }
@@ -58,26 +68,63 @@ public class ChattingService {
                 ));
             }
 
-            SdkIterable<Page<Message>> pages = messageRepository.query(queryBuilder.build());
+            Page<Message> firstPage = messageRepository.query(queryBuilder.build()).iterator().next();
 
-            List<Message> messages = new ArrayList<>();
+            List<Message> messages = firstPage.items();
             Long newLastEvaluatedSendTime = null;
 
-            for (Page<Message> page : pages) {
-                messages.addAll(page.items());
-                // 마지막 키를 페이지의 마지막으로 갱신
-                Map<String, AttributeValue> lastKey = page.lastEvaluatedKey();
-                if (lastKey != null && lastKey.containsKey("sendTime")) {
-                    newLastEvaluatedSendTime = Long.valueOf(lastKey.get("sendTime").n());
-                }
+            Map<String, AttributeValue> lastKey = firstPage.lastEvaluatedKey();
+            if (lastKey != null && lastKey.containsKey("sendTime")) {
+                newLastEvaluatedSendTime = Long.valueOf(lastKey.get("sendTime").n());
             }
 
             return new MessageListResponse(messages, newLastEvaluatedSendTime);
 
-        } catch (Exception e) {
-            log.error("메세지 조회 실패: {}", e.getMessage(), e);
-            throw new CustomException(ErrorCode.FAILED_MESSAGE_GET);
         }
+        catch(Exception e){
+                log.error("메세지 조회 실패: {}", e.getMessage(), e);
+                throw new CustomException(ErrorCode.FAILED_MESSAGE_GET);
+        }
+    }
+
+    @Transactional
+    public void joinChatRoom(Long userId, Long chatRoomId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
+                .orElseThrow(() -> new CustomException(ErrorCode.CHATROOM_NOT_FOUND));
+
+        if (userChatRoomRepository.existsByUserAndChatRoom(user, chatRoom)) {
+            return;
+        }
+
+        UserChatRoom userChatRoom = UserChatRoom.builder()
+                .user(user)
+                .chatRoom(chatRoom)
+                .build();
+
+        userChatRoomRepository.save(userChatRoom);
+    }
+
+    public List<UserChatRoomListDto> getUserChatRoomList(Long userId) {
+        List<UserChatRoom> userChatRooms = userChatRoomRepository.findByUserId(userId);
+        return userChatRooms.stream()
+                .map(userChatRoom -> new UserChatRoomListDto(
+                        userChatRoom.getChatRoom().getName(),
+                        (long) userChatRoom.getChatRoom().getUserChatRooms().size()
+                ))
+                .collect(Collectors.toList());
+    }
+    
+    public void deleteUserChatRoom(Long userId, Long chatRoomId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
+                .orElseThrow(() -> new CustomException(ErrorCode.CHATROOM_NOT_FOUND));
+
+        UserChatRoom userChatRoom = userChatRoomRepository.findByUserAndChatRoom(user, chatRoom)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_CHATROOM_NOT_FOUND));
+        userChatRoomRepository.delete(userChatRoom);
     }
 
     /**
