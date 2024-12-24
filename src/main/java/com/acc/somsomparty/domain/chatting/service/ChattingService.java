@@ -88,6 +88,4 @@ public class ChattingService {
     /**
      * TODO: 웹소켓 기반의 실시간 삭제
      */
-
-
 }
