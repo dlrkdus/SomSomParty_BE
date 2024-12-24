@@ -12,10 +12,11 @@ spring:
         show_sql: true
         format_sql: true
         use_sql_comments: true
-        ddl-auto: update
+        ddl-auto: create
         default_batch_fetch_size: 1000
   aws:
     dynamodb:
+      endpoint: http://localhost:8000
       region: ap-northeast-2
       access-key: ${AWS_ACCESS_KEY_ID}
       secret-key: ${AWS_SECRET_ACCESS_KEY}
