@@ -11,4 +11,5 @@ public interface FestivalQueryService {
     FestivalResponseDTO.FestivalPreViewListDTO getFestivalList(Long lastId, int offset);
     Festival getFestival(Long festivalId);
     List<Festival> getFestivalListByStartTime(LocalDate date);
+    FestivalResponseDTO.FestivalPreViewListDTO searchFestival(Long lastId, int limit, String keyword);
 }
