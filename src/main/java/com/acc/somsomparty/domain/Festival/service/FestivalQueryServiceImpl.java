@@ -13,7 +13,6 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -81,13 +80,5 @@ public class FestivalQueryServiceImpl implements FestivalQueryService {
                 .collect(Collectors.toList());
 
         return FestivalConverter.festivalPreViewListDTO(list, hasNext, lastId);
-    }
-
-    @Override
-    public List<Festival> getFestivalListByStartTime(LocalDate date) {
-        LocalDate today = LocalDate.now();
-        LocalDate tomorrow = today.plusDays(1);
-
-        return festivalRepository.findByStartDate(tomorrow);
     }
 }

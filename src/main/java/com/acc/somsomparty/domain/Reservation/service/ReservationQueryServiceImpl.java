@@ -4,7 +4,6 @@ import com.acc.somsomparty.domain.Reservation.converter.ReservationConverter;
 import com.acc.somsomparty.domain.Reservation.dto.ReservationResponseDTO;
 import com.acc.somsomparty.domain.Reservation.entity.Reservation;
 import com.acc.somsomparty.domain.Reservation.repository.ReservationRepository;
-import com.acc.somsomparty.domain.User.entity.User;
 import com.acc.somsomparty.global.exception.CustomException;
 import com.acc.somsomparty.global.exception.error.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -46,9 +45,5 @@ public class ReservationQueryServiceImpl implements ReservationQueryService {
                 .collect(Collectors.toList());
 
         return ReservationConverter.reservationPreViewListDTO(list, hasNext, lastId);
-    }
-
-    public List<User> getReservationListByFestivalId(Long festivalId) {
-        return reservationRepository.findUsersByFestivalId(festivalId);
     }
 }

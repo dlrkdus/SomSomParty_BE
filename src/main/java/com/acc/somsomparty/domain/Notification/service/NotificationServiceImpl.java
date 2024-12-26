@@ -1,52 +1,72 @@
 package com.acc.somsomparty.domain.Notification.service;
 
 import com.acc.somsomparty.domain.Festival.entity.Festival;
-import com.acc.somsomparty.domain.Festival.service.FestivalQueryService;
-import com.acc.somsomparty.domain.Reservation.service.ReservationQueryService;
-import com.acc.somsomparty.domain.User.entity.User;
+import com.acc.somsomparty.domain.Notification.projection.FestivalTokenProjection;
+import com.acc.somsomparty.domain.Notification.repository.FcmTokenRepository;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class NotificationServiceImpl implements NotificationService {
-    @Value("${aws.sns.application-arn}")
+    @Value("${aws.noti.sns.application-arn}")
     private String arn;
 
-    private final FestivalQueryService festivalQueryService;
-    private final ReservationQueryService reservationQueryService;
-    private final FcmTokenQueryService fcmTokenQueryService;
+    private final FcmTokenRepository fcmTokenRepository;
     private final SNSService snsService;
 
-    // festival id로 토큰 리스트 가져오기
-    private List<String> getFCMTokensByFestivalId(Long festivalId) {
-        List<User> users = reservationQueryService.getReservationListByFestivalId(festivalId);
-        List<String> tokens = new ArrayList<>();
-        for (User user : users) {
-            tokens.addAll(fcmTokenQueryService.getTokensByUserId(user.getId()));
+    private Logger logger = LoggerFactory.getLogger(NotificationServiceImpl.class);
+
+    private List<FestivalTokenProjection> getTokensForTomorrowFestival() {
+        LocalDate tomorrow = LocalDate.now().plusDays(1);
+
+        List<FestivalTokenProjection> tokens = fcmTokenRepository.findTokensForTomorrowFestival(tomorrow);
+
+        if (tokens.isEmpty()) {
+            logger.info("No festivals scheduled for tomorrow or no FCM tokens found.");
+        } else {
+            logger.info("Found {} festivals with FCM tokens for tomorrow.", tokens.size());
         }
         return tokens;
     }
 
     // festival 알림을 위한 aws sns 설정
-    public void setAWSSNSForFestival() {
-        LocalDate localDate = LocalDate.now();
-        List<Festival> festivals = festivalQueryService.getFestivalListByStartTime(localDate);
+    public void setAWSSNSForTomorrowFestival() {
+        logger.info("Starting AWS SNS notification setup for tomorrow's festivals.");
 
-        for (Festival festival : festivals) {
-            String title = festival.getName();
-            String msg = "하루 전입니다.";
+        try {
+            List<FestivalTokenProjection> results = getTokensForTomorrowFestival();
 
-            List<String> tokens = getFCMTokensByFestivalId(festival.getId());
-
-            for (String token : tokens) {
-                snsService.snsFCMWorkFlow(arn, token, title, msg);
+            if (results.isEmpty()) {
+                logger.info("No FCM tokens available for festival notifications. Skipping notification setup.");
+                return;
             }
+
+            for (FestivalTokenProjection projection : results) {
+                String token = projection.getFcmToken();
+                Festival festival = projection.getFestival();
+
+                if (token == null || token.isEmpty()) {
+                    logger.warn("FCM token is missing for festival: {}", festival.getName());
+                    continue;
+                }
+
+                String notiTitle = festival.getName();
+                String notiMsg = festival.getStartDate() + " 에 " + festival.getName() + "이 시작됩니다.";
+
+                logger.info("Sending notification for festival: {} with FCM token: {}", festival.getName(), token);
+                snsService.snsFCMWorkFlow(arn, token, notiTitle, notiMsg);
+            }
+
+            logger.info("AWS SNS notification setup completed successfully.");
+        } catch (Exception e) {
+            logger.error("An error occurred while setting up AWS SNS notifications: ", e);
         }
     }
 }

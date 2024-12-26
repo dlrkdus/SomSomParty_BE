@@ -37,5 +37,8 @@ aws:
     accessKey: ${NOTI_ACCESS_KEY}
     secretKey: ${NOTI_SECRET_KEY}
     region: ${NOTI_REGION}
-  sns:
-    application-arn: ${SNS_APP_ARN}
+    sqs:
+      queue-name: ${NOTI_SQS_QUEUE_NAME}
+      queue-url: ${NOTI_SQS_QUEUE_URL}
+    sns:
+      application-arn: ${NOTI_SNS_APP_ARN}
