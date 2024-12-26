@@ -31,3 +31,14 @@ spring:
         queue-name: ${SQS_QUEUE_NAME}
     stack:
       auto: false
+
+aws:
+  noti:
+    accessKey: ${NOTI_ACCESS_KEY}
+    secretKey: ${NOTI_SECRET_KEY}
+    region: ${NOTI_REGION}
+    sqs:
+      queue-name: ${NOTI_SQS_QUEUE_NAME}
+      queue-url: ${NOTI_SQS_QUEUE_URL}
+    sns:
+      application-arn: ${NOTI_SNS_APP_ARN}
