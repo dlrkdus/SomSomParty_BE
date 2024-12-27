@@ -18,6 +18,7 @@ public class ReservationResponseDTO {
     public static class ReservationPreViewDTO {
         Long id;
         LocalDate reservationDate;
+        LocalDate festivalDate;
         FestivalResponseDTO.FestivalPreViewDTO festivalInfo;
     }
 
