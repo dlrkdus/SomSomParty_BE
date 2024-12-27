@@ -17,5 +17,4 @@ public interface FestivalRepository extends JpaRepository<Festival, Long> {
             "AND (:lastId = 0 OR f.id < :lastId) " +
             "ORDER BY f.id DESC")
     Page<Festival> searchByKeyword(Long lastId, String keyword, Pageable pageable);
-
 }
