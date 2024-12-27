@@ -21,7 +21,7 @@ public class Reservation extends BaseEntity {
     @JoinColumn(name = "ticket_id")
     private Ticket ticket;
     @ManyToOne
-    @JoinColumn(name = "users_id")
+    @JoinColumn(name = "user_id")
     private User user;
     @Column(name = "reservation_date", nullable = false)
     private LocalDate reservationDate;
