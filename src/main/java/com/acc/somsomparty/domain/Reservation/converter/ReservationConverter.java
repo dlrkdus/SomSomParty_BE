@@ -15,6 +15,7 @@ public class ReservationConverter {
         return ReservationResponseDTO.ReservationPreViewDTO.builder()
                 .id(reservation.getId())
                 .reservationDate(reservation.getReservationDate())
+                .festivalDate(reservation.getTicket().getFestivalDate())
                 .festivalInfo(FestivalConverter.festivalPreViewDTO(reservation.getTicket().getFestival()))
                 .build();
     }

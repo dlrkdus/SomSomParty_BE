@@ -26,13 +26,13 @@ public class Festival extends BaseEntity {
     @Column(nullable = false, length = 20)
     private String name;
 
-    @Column(nullable = false, columnDefinition = "TEXT")
+    @Column(nullable = false, length = 255)
     private String description;
 
     @Column(name = "name_lower", nullable = false, length = 20)
     private String nameLower;
 
-    @Column(name = "description_lower", nullable = false, columnDefinition = "TEXT")
+    @Column(name = "description_lower", nullable = false, length = 255)
     private String descriptionLower;
 
     @Column(name = "start_date", nullable = false)
