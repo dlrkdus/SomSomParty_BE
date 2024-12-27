@@ -21,10 +21,13 @@ public class User extends BaseEntity {
     private Long id;
     @Column(nullable = false, length = 20)
     private String name;
+    @Column(nullable = false, unique = true)
+    private String username;
     @Column(nullable = false, length = 50, unique = true)
     private String email;
-    @Column(nullable = false)
-    private String password;
+//    ALTER TABLE users DROP COLUMN password;
+//    @Column(nullable = true)
+//    private String password;
     @Enumerated(EnumType.STRING)
     private Role role;
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
