@@ -110,6 +110,7 @@ public class ChattingService {
         List<UserChatRoom> userChatRooms = userChatRoomRepository.findByUserId(userId);
         return userChatRooms.stream()
                 .map(userChatRoom -> new UserChatRoomListDto(
+                        userChatRoom.getChatRoom().getId(),
                         userChatRoom.getChatRoom().getName(),
                         (long) userChatRoom.getChatRoom().getUserChatRooms().size()
                 ))

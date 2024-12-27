@@ -4,6 +4,7 @@ import lombok.Builder;
 
 @Builder
 public record UserChatRoomListDto(
+        Long id,
         String title,
         Long userCount
 ) {
