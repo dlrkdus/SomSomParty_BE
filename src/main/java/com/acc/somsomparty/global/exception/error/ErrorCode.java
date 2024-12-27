@@ -19,6 +19,11 @@ public enum ErrorCode {
     LOCK_ACQUISITION_FAILED(HttpStatus.BAD_REQUEST, "락을 획득할 수 없습니다."),
     // User
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 사용자입니다."),
+    USER_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 존재하는 사용자입니다."),
+    USER_NOT_CONFIRMED(HttpStatus.FORBIDDEN, "이메일 인증이 필요합니다. 이메일을 확인해주세요."),
+    REFRESH_TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "Refresh Token이 만료되었습니다."),
+    INVALID_REFRESH_TOKEN(HttpStatus.BAD_REQUEST, "유효하지 않은 Refresh Token입니다."),
+    TOKEN_VERIFICATION_FAILED(HttpStatus.UNAUTHORIZED, "토큰 검증에 실패했습니다."),
     // Ticket
     TICKET_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 티켓입니다."),
     TICKET_SOLD_OUT(HttpStatus.BAD_REQUEST, "남아있는 티켓이 없습니다.");

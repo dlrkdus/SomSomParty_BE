@@ -43,6 +43,11 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'software.amazon.awssdk:cognitoidentityprovider:2.20.66'
+	implementation 'com.auth0:jwks-rsa:0.21.0';
+	implementation 'com.auth0:java-jwt:4.4.0';
+
 	// redis
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
