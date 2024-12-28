@@ -11,4 +11,5 @@ public interface UserService {
     void logout(String accessToken);
     boolean verifyToken(String token);
     AdminInitiateAuthResponse refreshAccessToken(String refreshToken, String userName);
+    Long getIdByAuthentication();
 }

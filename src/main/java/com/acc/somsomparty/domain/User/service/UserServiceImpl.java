@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.services.cognitoidentityprovider.CognitoIdentityProviderClient;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.*;
@@ -237,6 +239,24 @@ public class UserServiceImpl implements UserService {
         } catch (CognitoIdentityProviderException e) {
             logger.error("Error during access token refresh", e);
             throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    // id 가져오기
+    public Long getIdByAuthentication() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        String username = null;
+        if (authentication != null && authentication.isAuthenticated()) {
+            username = authentication.getName();
+        }
+
+        if (username == null) {
+            throw new CustomException(ErrorCode.UNAUTHORIZED);
+        } else {
+            User user = userRepository.getUserByUsername(username);
+            logger.info("user info : {}", user.toString());
+            return user.getId();
         }
     }
 }
