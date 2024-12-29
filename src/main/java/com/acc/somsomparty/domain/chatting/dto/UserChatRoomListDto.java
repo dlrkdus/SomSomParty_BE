@@ -6,6 +6,7 @@ import lombok.Builder;
 public record UserChatRoomListDto(
         Long id,
         String title,
-        Long userCount
+        Long userCount,
+        Integer unReadCount
 ) {
 }

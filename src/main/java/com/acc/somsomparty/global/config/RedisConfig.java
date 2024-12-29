@@ -42,11 +42,13 @@ public class RedisConfig {
 
         // Key는 String 타입, 값은 JSON 직렬화 방식으로 설정
         redisTemplate.setKeySerializer(new StringRedisSerializer());
+        redisTemplate.setHashKeySerializer(new StringRedisSerializer());
 
         // Jackson2JsonRedisSerializer에 ObjectMapper 전달
         Jackson2JsonRedisSerializer<Object> serializer = new Jackson2JsonRedisSerializer<>(Object.class);
         serializer.setObjectMapper(objectMapper);
         redisTemplate.setValueSerializer(serializer);
+        redisTemplate.setHashValueSerializer(serializer);
 
         return redisTemplate;
     }

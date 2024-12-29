@@ -3,7 +3,6 @@ package com.acc.somsomparty.domain.chatting.service;
 import com.acc.somsomparty.domain.chatting.dto.MessageDto;
 import com.acc.somsomparty.domain.chatting.entity.Message;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.time.ZoneOffset;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -38,6 +37,7 @@ public class KafkaConsumerService {
         // WebSocket 구독자들에게 메시지 전달
         messagingTemplate.convertAndSend("/topic/chat/" + key, chatMessage);
         log.info("WebSocket 구독자들에게 메세지 전달 완료");
+        chattingService.incrementUnreadCount(key);
     }
 
     /**
