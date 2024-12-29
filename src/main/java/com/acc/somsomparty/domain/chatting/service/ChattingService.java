@@ -78,7 +78,10 @@ public class ChattingService {
                 newLastEvaluatedSendTime = Long.valueOf(lastKey.get("sendTime").n());
             }
 
-            return new MessageListResponse(messages, newLastEvaluatedSendTime);
+            ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
+                    .orElseThrow(() -> new CustomException(ErrorCode.CHATROOM_NOT_FOUND));
+
+            return new MessageListResponse(chatRoom.getName(),messages, newLastEvaluatedSendTime);
 
         }
         catch(Exception e){
@@ -88,14 +91,15 @@ public class ChattingService {
     }
 
     @Transactional
-    public void joinChatRoom(Long userId, Long chatRoomId) {
+    public Long joinChatRoom(Long userId, Long chatRoomId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
         ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
                 .orElseThrow(() -> new CustomException(ErrorCode.CHATROOM_NOT_FOUND));
 
+
         if (userChatRoomRepository.existsByUserAndChatRoom(user, chatRoom)) {
-            return;
+            return userChatRoomRepository.findByUserAndChatRoom(user,chatRoom).get().getChatRoom().getId();
         }
 
         UserChatRoom userChatRoom = UserChatRoom.builder()
@@ -103,7 +107,8 @@ public class ChattingService {
                 .chatRoom(chatRoom)
                 .build();
 
-        userChatRoomRepository.save(userChatRoom);
+        UserChatRoom savedUserChatRoom = userChatRoomRepository.save(userChatRoom);
+        return savedUserChatRoom.getChatRoom().getId();
     }
 
     public List<UserChatRoomListDto> getUserChatRoomList(Long userId) {
