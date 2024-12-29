@@ -4,7 +4,6 @@ spring:
     username: ${DB_USER}
     password: ${DB_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
-
   jpa:
     hibernate:
       ddl-auto: update
@@ -44,6 +43,7 @@ aws:
       queue-url: ${NOTI_SQS_QUEUE_URL}
     sns:
       application-arn: ${NOTI_SNS_APP_ARN}
+
   auth:
     cognito:
       accessKey: ${COGNITO_ACCESS_KEY}
