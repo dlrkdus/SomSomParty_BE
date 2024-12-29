@@ -2,6 +2,7 @@ package com.acc.somsomparty.domain.User.entity;
 
 import com.acc.somsomparty.domain.Reservation.entity.Reservation;
 import com.acc.somsomparty.domain.User.enums.Role;
+import com.acc.somsomparty.domain.chatting.entity.UserChatRoom;
 import com.acc.somsomparty.global.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -32,4 +33,6 @@ public class User extends BaseEntity {
     private Role role;
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Reservation> reservationList = new ArrayList<>();
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<UserChatRoom> userChatRooms = new ArrayList<>();
 }
