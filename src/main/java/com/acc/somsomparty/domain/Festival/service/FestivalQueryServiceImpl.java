@@ -5,6 +5,7 @@ import com.acc.somsomparty.domain.Festival.dto.FestivalRequestDTO;
 import com.acc.somsomparty.domain.Festival.dto.FestivalResponseDTO;
 import com.acc.somsomparty.domain.Festival.entity.Festival;
 import com.acc.somsomparty.domain.Festival.repository.FestivalRepository;
+import com.acc.somsomparty.domain.Ticket.entity.Ticket;
 import com.acc.somsomparty.domain.chatting.service.ChattingService;
 import com.acc.somsomparty.global.exception.CustomException;
 import com.acc.somsomparty.global.exception.error.ErrorCode;
@@ -15,6 +16,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -73,8 +75,28 @@ public class FestivalQueryServiceImpl implements FestivalQueryService {
 
     @Override
     public Festival save(FestivalRequestDTO festivalRequestDTO) {
+        // Festival 생성
         Festival festival = new Festival(festivalRequestDTO.getTitle(),festivalRequestDTO.getDescription(),
                 festivalRequestDTO.getStartDate(), festivalRequestDTO.getEndDate());
+
+        // startDate부터 endDate까지의 날짜에 대한 Ticket 생성
+        LocalDate startDate = festivalRequestDTO.getStartDate();
+        LocalDate endDate = festivalRequestDTO.getEndDate();
+
+        // TODO: 기본 총 티켓 수 (필요 시 변경)
+        int defaultTotalTickets = 100;
+
+        for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
+            Ticket ticket = Ticket.builder()
+                    .festival(festival)
+                    .festivalDate(date)
+                    .totalTickets(defaultTotalTickets)
+                    .leftTickets(defaultTotalTickets)
+                    .build();
+
+            festival.getTicketList().add(ticket);
+        }
+
         Festival savedFestival = festivalRepository.save(festival);
         chattingService.publishCreateChatRoom(savedFestival);
         return savedFestival;
