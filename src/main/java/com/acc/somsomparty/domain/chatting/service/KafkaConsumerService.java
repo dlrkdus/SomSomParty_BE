@@ -59,7 +59,7 @@ public class KafkaConsumerService {
                 .senderName(chatMessage.senderName())
                 .chatRoomId(chatMessage.chatRoomId())
                 .content(chatMessage.content())
-                .sendTime(chatMessage.createdAt().toEpochSecond(ZoneOffset.UTC))
+                .sendTime(chatMessage.sendTime())
                 .build();
 
         //DynamoDB 저장
