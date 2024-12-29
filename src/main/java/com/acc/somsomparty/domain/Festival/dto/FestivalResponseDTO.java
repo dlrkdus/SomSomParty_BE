@@ -17,8 +17,8 @@ public class FestivalResponseDTO {
         Long id;
         String name;
         String description;
-        LocalDate startDate;
-        LocalDate endDate;
+        String startDate;
+        String endDate;
     }
 
     @Builder

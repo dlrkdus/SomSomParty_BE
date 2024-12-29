@@ -52,3 +52,10 @@ aws:
       app-client-id: ${COGNITO_APP_CLIENT_ID}
       client-secret: ${COGNITO_CLIENT_SECRET}
       jwks-url: ${COGNITO_JWKS_URL}
+      
+logging:
+level:
+  org:
+    springframework:
+      web:
+        socket: DEBUG

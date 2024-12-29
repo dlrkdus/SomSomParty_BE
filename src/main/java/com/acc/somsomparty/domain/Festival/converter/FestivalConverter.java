@@ -11,8 +11,8 @@ public class FestivalConverter {
                 .id(festival.getId())
                 .name(festival.getName())
                 .description(festival.getDescription())
-                .startDate(festival.getStartDate())
-                .endDate(festival.getEndDate())
+                .startDate(festival.getStartDate().toString())
+                .endDate(festival.getEndDate().toString())
                 .build();
     }
 
