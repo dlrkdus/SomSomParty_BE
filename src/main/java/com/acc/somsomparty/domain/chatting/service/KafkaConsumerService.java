@@ -2,8 +2,8 @@ package com.acc.somsomparty.domain.chatting.service;
 
 import com.acc.somsomparty.domain.chatting.dto.MessageDto;
 import com.acc.somsomparty.domain.chatting.entity.Message;
-import com.acc.somsomparty.domain.chatting.repository.dynamodb.MessageRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.ZoneOffset;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -16,7 +16,8 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class KafkaConsumerService {
     private final SimpMessagingTemplate messagingTemplate; // STOMP 메시지 전송 객체
-    private final MessageRepository messageRepository;
+    private final ChattingService chattingService;
+    private final ObjectMapper objectMapper;
 
     /**
      * @param record: @KafkaListener 의 기본 동작 방식에서는 메서드 파라미터로 메시지와 Key 를 직접 분리해서 읽을 수 없다.
@@ -58,16 +59,15 @@ public class KafkaConsumerService {
                 .senderName(chatMessage.senderName())
                 .chatRoomId(chatMessage.chatRoomId())
                 .content(chatMessage.content())
-                .sendTime(chatMessage.createdAt())
+                .sendTime(chatMessage.createdAt().toEpochSecond(ZoneOffset.UTC))
                 .build();
 
         //DynamoDB 저장
-        messageRepository.save(messageEntity);
+        chattingService.save(messageEntity);
         log.info("메세지 DynamoDB 저장 완료: {}",messageEntity);
     }
 
     private MessageDto parseMessage(String message) {
-        ObjectMapper objectMapper = new ObjectMapper();
         try {
             return objectMapper.readValue(message, MessageDto.class);
         } catch (Exception e) {

@@ -13,10 +13,11 @@ import org.springframework.stereotype.Service;
 public class KafkaProducerService {
 
     private final KafkaTemplate<String, String> kafkaTemplate;
+    private final ObjectMapper objectMapper;
 
     public void sendMessage(String topic, String key, Object message) {
         try {
-            String jsonMessage = new ObjectMapper().writeValueAsString(message); // JSON 직렬화
+            String jsonMessage = objectMapper.writeValueAsString(message); // JSON 직렬화
             kafkaTemplate.send(topic, key, jsonMessage);
             log.info("토픽으로 메세지를 전송함. 토픽: {}, 키: {}, 메세지: {}", topic, key, jsonMessage);
         } catch (Exception e) {

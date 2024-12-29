@@ -6,16 +6,16 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
+    hibernate:
+      ddl-auto: update
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.MySQL8Dialect
         show_sql: true
         format_sql: true
-        use_sql_comments: true
-        ddl-auto: update
-        default_batch_fetch_size: 1000
+        dialect: org.hibernate.dialect.MySQLDialect
   aws:
     dynamodb:
+      endpoint: http://localhost:8000
       region: ap-northeast-2
       access-key: ${AWS_ACCESS_KEY_ID}
       secret-key: ${AWS_SECRET_ACCESS_KEY}
@@ -34,7 +34,6 @@ spring:
         queue-name: ${SQS_QUEUE_NAME}
     stack:
       auto: false
-
 aws:
   noti:
     accessKey: ${NOTI_ACCESS_KEY}
