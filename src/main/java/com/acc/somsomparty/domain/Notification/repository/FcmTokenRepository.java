@@ -20,4 +20,6 @@ public interface FcmTokenRepository extends JpaRepository<FcmToken, Long> {
             "JOIN Festival f ON t.festival.id = f.id " +
             "WHERE f.startDate = :tomorrow")
     List<FestivalTokenProjection> findTokensForTomorrowFestival(@Param("tomorrow") LocalDate tomorrow);
+
+    FcmToken findByFcmTokenAndUserId(String fcmToken, Long userId);
 }
