@@ -4,6 +4,7 @@ import com.acc.somsomparty.domain.Reservation.dto.ReservationRequestDTO;
 import com.acc.somsomparty.domain.Reservation.dto.ReservationResponseDTO;
 import com.acc.somsomparty.domain.Reservation.service.ReservationCommandService;
 import com.acc.somsomparty.domain.Reservation.service.ReservationQueryService;
+import com.acc.somsomparty.domain.User.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -16,10 +17,12 @@ import org.springframework.web.bind.annotation.*;
 public class ReservationController {
     private final ReservationQueryService reservationQueryService;
     private final ReservationCommandService reservationCommandService;
+    private final UserService userService;
 
     @Operation(summary = "예약 목록 조회", description = "사용자의 예약 목록을 조회합니다.")
     @GetMapping("")
-    public ResponseEntity<ReservationResponseDTO.ReservationPreViewListDTO> getReservationList(@RequestParam(name = "userId") Long userId, @RequestParam(defaultValue = "0") Long lastId, @RequestParam(defaultValue = "10") int limit) {
+    public ResponseEntity<ReservationResponseDTO.ReservationPreViewListDTO> getReservationList(@RequestParam(defaultValue = "0") Long lastId, @RequestParam(defaultValue = "10") int limit) {
+        Long userId = userService.getIdByAuthentication();
         ReservationResponseDTO.ReservationPreViewListDTO reservationPage = reservationQueryService.getReservationList(userId, lastId, limit);
         return new ResponseEntity<>(reservationPage, HttpStatus.OK);
     }
