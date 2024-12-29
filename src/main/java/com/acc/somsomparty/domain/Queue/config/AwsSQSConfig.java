@@ -17,11 +17,11 @@ import software.amazon.awssdk.services.sqs.SqsAsyncClient;
 @Slf4j
 @Configuration
 public class AwsSQSConfig {
-    @Value("${aws.queue.access-key}")
+    @Value("${spring.cloud.aws.queue.access-key}")
     private String AWS_ACCESS_KEY;
-    @Value("${aws.queue.secret-key}")
+    @Value("${spring.cloud.aws.queue.secret-key}")
     private String AWS_SECRET_KEY;
-    @Value("${aws.queue.region}")
+    @Value("${spring.cloud.aws.queue.region}")
     private String AWS_REGION;
 
     @Bean
