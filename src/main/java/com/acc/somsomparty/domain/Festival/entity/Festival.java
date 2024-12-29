@@ -1,6 +1,8 @@
 package com.acc.somsomparty.domain.Festival.entity;
 
+import com.acc.somsomparty.domain.Reservation.entity.Reservation;
 import com.acc.somsomparty.domain.Ticket.entity.Ticket;
+import com.acc.somsomparty.domain.chatting.entity.ChatRoom;
 import com.acc.somsomparty.global.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -26,13 +28,13 @@ public class Festival extends BaseEntity {
     @Column(nullable = false, length = 20)
     private String name;
 
-    @Column(nullable = false, columnDefinition = "TEXT")
+    @Column(nullable = false, length = 255)
     private String description;
 
     @Column(name = "name_lower", nullable = false, length = 20)
     private String nameLower;
 
-    @Column(name = "description_lower", nullable = false, columnDefinition = "TEXT")
+    @Column(name = "description_lower", nullable = false, length = 255)
     private String descriptionLower;
 
     @Column(name = "start_date", nullable = false)
@@ -44,10 +46,24 @@ public class Festival extends BaseEntity {
     @OneToMany(mappedBy = "festival", cascade = CascadeType.ALL)
     private List<Ticket> ticketList = new ArrayList<>();
 
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "id")
+    private ChatRoom chatRoom;
+
+    public void addChatRoom(ChatRoom chatRoom) {
+        this.chatRoom = chatRoom;
+    }
     @PrePersist
     @PreUpdate
     private void setLowercaseValues() {
         this.nameLower = this.name.toLowerCase();
         this.descriptionLower = this.description.toLowerCase();
+    }
+
+    public Festival(String name, String description, LocalDate startDate, LocalDate endDate) {
+        this.name = name;
+        this.description = description;
+        this.startDate = startDate;
+        this.endDate = endDate;
     }
 }
