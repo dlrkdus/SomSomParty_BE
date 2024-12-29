@@ -39,6 +39,10 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'software.amazon.awssdk:cognitoidentityprovider:2.20.66'
+	implementation 'com.auth0:jwks-rsa:0.21.0';
+	implementation 'com.auth0:java-jwt:4.4.0';
 	// 카프카
 	implementation 'org.springframework.kafka:spring-kafka:2.9.0'
 	//DynamoDB

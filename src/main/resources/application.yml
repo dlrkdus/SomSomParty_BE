@@ -45,9 +45,18 @@ aws:
     sns:
       application-arn: ${NOTI_SNS_APP_ARN}
 
+  auth:
+    cognito:
+      accessKey: ${COGNITO_ACCESS_KEY}
+      secretKey: ${COGNITO_SECRET_KEY}
+      user-pool-id: ${COGNITO_USER_POOL_ID}
+      app-client-id: ${COGNITO_APP_CLIENT_ID}
+      client-secret: ${COGNITO_CLIENT_SECRET}
+      jwks-url: ${COGNITO_JWKS_URL}
+      
 logging:
-  level:
-    org:
-      springframework:
-        web:
-          socket: DEBUG
+level:
+  org:
+    springframework:
+      web:
+        socket: DEBUG
