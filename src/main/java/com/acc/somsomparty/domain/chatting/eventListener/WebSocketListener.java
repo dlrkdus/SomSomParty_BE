@@ -1,5 +1,6 @@
 package com.acc.somsomparty.domain.chatting.eventListener;
 
+import java.time.Duration;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
@@ -26,13 +27,12 @@ public class WebSocketListener {
         // Redis 에 접속 상태 저장
         String redisKey = "chatRoom:activeUsers:" + chatRoomId;
         redisTemplate.opsForSet().add(redisKey, userId);
+        redisTemplate.expire(redisKey, Duration.ofHours(1));
         resetUnreadCount(chatRoomId, userId);
-
 
         // WebSocket 세션 속성에 사용자 정보 저장
         headerAccessor.getSessionAttributes().put("userId", userId);
         headerAccessor.getSessionAttributes().put("chatRoomId", chatRoomId);
-
         log.info("User {} 가 채팅방 {} 에 접속했습니다.", userId, chatRoomId);
     }
 
@@ -46,7 +46,6 @@ public class WebSocketListener {
         // Redis 에서 접속 상태 제거
         String redisKey = "chatRoom:activeUsers:" + chatRoomId;
         redisTemplate.opsForSet().remove(redisKey, userId);
-
         log.info("User {} 가 채팅방 {} 에서 나갔습니다.", userId, chatRoomId);
     }
 

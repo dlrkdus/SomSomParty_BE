@@ -32,6 +32,7 @@ import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Transactional
 public class ChattingService {
 
     private final MessageRepository messageRepository;
