@@ -13,7 +13,7 @@ import java.util.List;
 @Repository
 public interface FcmTokenRepository extends JpaRepository<FcmToken, Long> {
     // 축제 시작 날짜를 기준으로 예약자의 fcm token 가져오기
-    @Query("SELECT ft.fcmToken AS fcmToken, f AS festival " +
+    @Query("SELECT ft.fcmToken AS fcmToken, ft.tokenState AS tokenState, f AS festival " +
             "FROM FcmToken ft " +
             "JOIN Reservation r ON ft.userId = r.user.id " +
             "JOIN Ticket t ON r.ticket.id = t.id " +
