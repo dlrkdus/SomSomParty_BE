@@ -6,6 +6,7 @@ import lombok.Builder;
 
 @Builder
 public record MessageListResponse(
+        String title,
         List<Message> messages,
         Long lastEvaluatedSendTime) {
 }

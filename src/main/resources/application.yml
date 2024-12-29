@@ -44,3 +44,10 @@ aws:
       queue-url: ${NOTI_SQS_QUEUE_URL}
     sns:
       application-arn: ${NOTI_SNS_APP_ARN}
+
+logging:
+  level:
+    org:
+      springframework:
+        web:
+          socket: DEBUG

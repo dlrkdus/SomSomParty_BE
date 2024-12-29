@@ -1,12 +1,8 @@
 package com.acc.somsomparty.domain.chatting.controller;
 
-import com.acc.somsomparty.domain.chatting.dto.MessageDto;
 import com.acc.somsomparty.domain.chatting.dto.MessageListResponse;
 import com.acc.somsomparty.domain.chatting.dto.UserChatRoomListDto;
-import com.acc.somsomparty.domain.chatting.entity.Message;
-import com.acc.somsomparty.domain.chatting.entity.UserChatRoom;
 import com.acc.somsomparty.domain.chatting.service.ChattingService;
-import com.acc.somsomparty.domain.chatting.service.KafkaProducerService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
@@ -16,7 +12,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -57,11 +52,10 @@ public class ChattingController {
             description = "회원이 채팅방에 처음 참여하는 경우 참여 채팅방 목록에 추가한다."
     )
     @PostMapping("/{chatRoomId}/join")
-    public ResponseEntity<Void> joinChatRoom(
+    public ResponseEntity<Long> joinChatRoom(
             @PathVariable Long chatRoomId,
             @RequestParam Long userId) {
-        chattingService.joinChatRoom(userId, chatRoomId);
-        return ResponseEntity.ok().build();
+        return new ResponseEntity<>(chattingService.joinChatRoom(userId,chatRoomId), HttpStatus.OK);
     }
 
     @Operation(
