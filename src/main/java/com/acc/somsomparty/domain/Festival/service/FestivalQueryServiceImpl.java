@@ -99,6 +99,11 @@ public class FestivalQueryServiceImpl implements FestivalQueryService {
 
         Festival savedFestival = festivalRepository.save(festival);
         chattingService.publishCreateChatRoom(savedFestival);
+
+        // Redis 캐시 무효화
+        String cacheKeyPattern = "festival::search::*";
+        redisTemplate.keys(cacheKeyPattern).forEach(redisTemplate::delete);
+
         return savedFestival;
     }
 
