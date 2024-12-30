@@ -205,7 +205,7 @@ public class UserServiceImpl implements UserService {
             return true;
         } catch (NotAuthorizedException e) {
             logger.warn("Unauthorized token access", e);
-            throw new CustomException(ErrorCode.UNAUTHORIZED);
+            throw new CustomException(ErrorCode.ACCESS_TOKEN_EXPIRED);
         } catch (CognitoIdentityProviderException e) {
             logger.error("Error during token verification", e);
             throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR);
