@@ -8,4 +8,9 @@ import lombok.Getter;
 @AllArgsConstructor
 public class CustomException extends RuntimeException {
     ErrorCode errorCode;
+
+    @Override
+    public String getMessage() {
+        return errorCode.getMessage();  // ErrorCode의 메시지를 반환
+    }
 }
