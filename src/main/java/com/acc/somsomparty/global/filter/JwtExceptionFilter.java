@@ -23,6 +23,7 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
         } catch (CustomException e){
             response.setStatus(e.getErrorCode().getHttpStatus().value());  // 401 Unauthorized
             response.getWriter().write(e.getMessage());  // CustomException 메시지 전달
+            return;
         }
     }
 }
