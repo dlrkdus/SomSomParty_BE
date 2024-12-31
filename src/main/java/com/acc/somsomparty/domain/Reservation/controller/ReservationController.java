@@ -21,7 +21,8 @@ public class ReservationController {
 
     @Operation(summary = "예약 목록 조회", description = "사용자의 예약 목록을 조회합니다.")
     @GetMapping("")
-    public ResponseEntity<ReservationResponseDTO.ReservationPreViewListDTO> getReservationList(@RequestParam(name = "userId") Long userId, @RequestParam(defaultValue = "0") Long lastId, @RequestParam(defaultValue = "10") int limit) {
+    public ResponseEntity<ReservationResponseDTO.ReservationPreViewListDTO> getReservationList(@RequestParam(defaultValue = "0") Long lastId, @RequestParam(defaultValue = "10") int limit) {
+        Long userId = userService.getIdByAuthentication();
         ReservationResponseDTO.ReservationPreViewListDTO reservationPage = reservationQueryService.getReservationList(userId, lastId, limit);
         return new ResponseEntity<>(reservationPage, HttpStatus.OK);
     }
