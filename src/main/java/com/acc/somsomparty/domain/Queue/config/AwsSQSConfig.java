@@ -5,11 +5,10 @@ import io.awspring.cloud.sqs.config.SqsMessageListenerContainerFactory;
 import io.awspring.cloud.sqs.listener.acknowledgement.AcknowledgementOrdering;
 import io.awspring.cloud.sqs.listener.acknowledgement.handler.AcknowledgementMode;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import software.amazon.awssdk.auth.credentials.AwsCredentials;
+import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.sqs.SqsAsyncClient;
 
@@ -17,28 +16,12 @@ import software.amazon.awssdk.services.sqs.SqsAsyncClient;
 @Slf4j
 @Configuration
 public class AwsSQSConfig {
-    @Value("${spring.cloud.aws.queue.access-key}")
-    private String AWS_ACCESS_KEY;
-    @Value("${spring.cloud.aws.queue.secret-key}")
-    private String AWS_SECRET_KEY;
-    @Value("${spring.cloud.aws.queue.region}")
-    private String AWS_REGION;
 
     @Bean
     public SqsAsyncClient sqsAsyncClient() {
         return SqsAsyncClient.builder()
-                .credentialsProvider(() -> new AwsCredentials() {
-                    @Override
-                    public String accessKeyId() {
-                        return AWS_ACCESS_KEY;
-                    }
-
-                    @Override
-                    public String secretAccessKey() {
-                        return AWS_SECRET_KEY;
-                    }
-                })
-                .region(Region.of(AWS_REGION))
+                .credentialsProvider(DefaultCredentialsProvider.create()) // IAM 역할 기반 인증
+                .region(Region.of(System.getenv("AWS_REGION"))) // 환경 변수에서 AWS Region 읽기
                 .build();
     }
 
@@ -47,7 +30,7 @@ public class AwsSQSConfig {
         return SqsMessageListenerContainerFactory
                 .builder()
                 .configure(options -> options
-                        .acknowledgementMode(AcknowledgementMode.MANUAL) // 명시적으로 acknowledgement를 해야 메시지가 삭제
+                        .acknowledgementMode(AcknowledgementMode.MANUAL) // 명시적으로 acknowledgement를 해야 메시지가 삭제됨
                         .acknowledgementOrdering(AcknowledgementOrdering.ORDERED) // 순서대로 처리
                 )
                 .sqsAsyncClient(sqsAsyncClient)

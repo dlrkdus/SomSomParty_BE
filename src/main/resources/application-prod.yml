@@ -15,22 +15,26 @@ spring:
   aws:
     dynamodb:
       endpoint: ${dynamodb.url}
-      region: ap-northeast-2
+      region: ${region}
   data:
     redis:
       host: ${elastic_cache.url}
       port: 6379
   cloud:
     aws:
+      region:
+        static: ${region}
+        credentials:
+          instance-profile: true # IAM 역할 사용
+        stack:
+          auto: false
       queue:
         region: ${region}
       sqs:
         queue-name: ${wait_sqs.name}
-    stack:
-      auto: false
 aws:
   noti:
-    region: ap-northeast-2
+    region: ${region}
     sqs:
       queue-name: ${noti_sqs.name}
     sns:
@@ -60,5 +64,3 @@ aws:
       sasl.mechanism: AWS_MSK_IAM
       sasl.jaas.config: software.amazon.msk.auth.iam.IAMLoginModule required;
       sasl.client.callback.handler.class: software.amazon.msk.auth.iam.IAMClientCallbackHandler
-
-
