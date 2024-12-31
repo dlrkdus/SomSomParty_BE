@@ -48,11 +48,7 @@ public class RedisConfig {
     }
 
     @Bean
-    public ReactiveRedisTemplate<String, Long> reactiveRedisTemplate(ReactiveRedisConnectionFactory factory) {
-        RedisSerializationContext<String, Long> serializationContext = RedisSerializationContext
-                .<String, Long>newSerializationContext(RedisSerializer.string())
-                .value(new GenericToStringSerializer<>(Long.class)) // Long 값을 위한 직렬화기 설정
-                .build();
-        return new ReactiveRedisTemplate<>(factory, serializationContext);
+    public ReactiveRedisTemplate<String, String> reactiveRedisTemplate(ReactiveRedisConnectionFactory factory) {
+        return new ReactiveRedisTemplate<>(factory, RedisSerializationContext.string());
     }
 }
