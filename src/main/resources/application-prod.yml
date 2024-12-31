@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: ${/somparty/rds/endpoint}
-    username: ${/somparty/rds/user}
-    password: ${/somparty/rds/password}
+    url: ${rds.url}
+    username: ${rds.user}
+    password: ${rds.password}
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
@@ -14,40 +14,40 @@ spring:
         dialect: org.hibernate.dialect.MySQLDialect
   aws:
     dynamodb:
-      endpoint: ${/somparty/dynamodb/url}
+      endpoint: ${dynamodb.url}
       region: ap-northeast-2
   data:
     redis:
-      host: ${/somparty/elastic_cache/url}
+      host: ${elastic_cache.url}
       port: 6379
   cloud:
     aws:
       queue:
-        region: ${/somparty/region}
+        region: ${region}
       sqs:
-        queue-name: ${/somparty/sqs/noti}
+        queue-name: ${wait_sqs.name}
     stack:
       auto: false
 aws:
   noti:
     region: ap-northeast-2
     sqs:
-      queue-name: ${/somparty/sqs/noti}
+      queue-name: ${noti_sqs.name}
     sns:
-      application-arn: ${/somparty/sns/arn}
+      application-arn: ${noti_sns.arn}
 
   auth:
     cognito:
-      user-pool-id: ${/somparty/cognito/userPoolId}
-      app-client-id: ${/somparty/cognito/clientId}
-      client-secret: ${/somparty/cognito/clientSecret}
-      jwks-url: ${/somparty/cognito/jwksUrl}
+      user-pool-id: ${cognito.user_pool_id}
+      app-client-id: ${cognito.client_id}
+      client-secret: ${cognito.client_secret}
+      jwks-url: ${cognito.jwks_url}
 
   kafka:
     bootstrap-servers:
-      - b-1.sompartymsk.uor58i.c4.kafka.ap-northeast-2.amazonaws.com:9098
-      - b-2.sompartymsk.uor58i.c4.kafka.ap-northeast-2.amazonaws.com:9098
-      - b-3.sompartymsk.uor58i.c4.kafka.ap-northeast-2.amazonaws.com:9098
+      - ${kafka.broker1}
+      - ${kafka.broker2}
+      - ${kafka.broker3}
     consumer:
       auto-offset-reset: earliest
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
@@ -60,3 +60,5 @@ aws:
       sasl.mechanism: AWS_MSK_IAM
       sasl.jaas.config: software.amazon.msk.auth.iam.IAMLoginModule required;
       sasl.client.callback.handler.class: software.amazon.msk.auth.iam.IAMClientCallbackHandler
+
+

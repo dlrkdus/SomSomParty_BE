@@ -59,12 +59,12 @@ dependencies {
 	//jackson
 	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.18.1'
 
-	implementation platform("io.awspring.cloud:spring-cloud-aws-dependencies:3.0.1")
+	implementation platform("io.awspring.cloud:spring-cloud-aws-dependencies:3.1.0")
 	implementation 'io.awspring.cloud:spring-cloud-aws-starter-sqs:3.2.0-M1'
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis-reactive'
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 	implementation "org.redisson:redisson-spring-boot-starter:3.40.2"
-	implementation 'io.awspring.cloud:spring-cloud-aws-starter-parameter-store:3.0.0'
+	implementation 'io.awspring.cloud:spring-cloud-aws-starter-parameter-store'
 }
 
 tasks.named('test') {

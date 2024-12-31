@@ -1,11 +1,7 @@
 spring:
+  config:
+    import: aws-parameterstore:/config/somparty/
   profiles:
     active: prod
-  cloud:
-    aws:
-      parameterstore:
-        enabled: true
-        region: ap-northeast-2
-
-server:
-  port: 8080
+  server:
+    port: 8080
