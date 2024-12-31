@@ -29,7 +29,7 @@ public class KafkaProducerServiceTest {
     public void testSendMessage() {
         String topic = "chat-topic";
         String key = "chatRoomId1";
-        MessageDto message = MessageDto.builder().chatRoomId(1L).content("Hello").userName("user").build();
+        MessageDto message = MessageDto.builder().chatRoomId(1L).content("Hello").senderName("user").build();
 
         // when
         kafkaProducerService.sendMessage(topic, key, message);

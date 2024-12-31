@@ -33,7 +33,7 @@ public class KafkaConsumerServiceTest {
         ConsumerRecord<String, String> record = new ConsumerRecord<>("chat-topic", 0, 0L, key, message);
 
         // when
-        kafkaConsumerService.consume(record);
+        kafkaConsumerService.websocketConsumer(record);
 
         // then
         verify(messagingTemplate, times(1))

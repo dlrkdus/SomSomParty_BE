@@ -46,6 +46,7 @@ dependencies {
 	implementation 'com.auth0:java-jwt:4.4.0';
 	// 카프카
 	implementation 'org.springframework.kafka:spring-kafka:2.9.0'
+	implementation 'software.amazon.msk:aws-msk-iam-auth:1.1.0'
 	//DynamoDB
 	implementation platform('software.amazon.awssdk:bom:2.20.85')
 	implementation 'software.amazon.awssdk:dynamodb-enhanced'

@@ -1,0 +1,63 @@
+name: Build, Push to ECR, and Deploy to EC2 via SSM
+
+on:
+  push:
+    branches:
+      - test
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    env:
+      AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+      ECR_REPOSITORY_NAME: somparty
+      AWS_REGION: ap-northeast-2
+      INSTANCE_IDS: ${{ secrets.INSTANCE_ID_A }},${{ secrets.INSTANCE_ID_C }}
+
+    steps:
+      # 1. Checkout code from GitHub
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      # 2. Configure AWS credentials
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: arn:aws:iam::${{ env.AWS_ACCOUNT_ID }}:role/${{ secrets.EC2_ROLE_NAME }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      # 3. Log in to Amazon ECR
+      - name: Log in to Amazon ECR
+        run: |
+          aws ecr get-login-password --region ${{ env.AWS_REGION }} | docker login --username AWS --password-stdin ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com
+
+      # 4. Build Docker Image
+      - name: Build Docker Image
+        run: |
+          docker build -t ${{ env.ECR_REPOSITORY_NAME }}:latest .
+          docker tag ${{ env.ECR_REPOSITORY_NAME }}:latest ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY_NAME }}:latest
+
+      # 5. Push to Amazon ECR
+      - name: Push to Amazon ECR
+        run: |
+          docker push ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY_NAME }}:latest
+
+      # 6. Deploy to EC2 instances via SSM
+      - name: Deploy to EC2 via SSM
+        run: |
+          aws ssm send-command \
+            --document-name "AWS-RunShellScript" \
+            --targets "Key=instanceIds,Values=${{ env.INSTANCE_IDS }}" \
+            --parameters commands='[
+              "aws ecr get-login-password --region ${{ env.AWS_REGION }} | docker login --username AWS --password-stdin ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com",
+              "docker pull ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY_NAME }}:latest",
+              "docker stop somparty || true",
+              "docker rm somparty || true",
+              "docker run -d -p 8080:8080 --name somparty ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY_NAME }}:latest"
+            ]' \
+            --region ${{ env.AWS_REGION }}
