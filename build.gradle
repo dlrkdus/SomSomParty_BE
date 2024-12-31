@@ -64,7 +64,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis-reactive'
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 	implementation "org.redisson:redisson-spring-boot-starter:3.40.2"
-	implementation 'io.awspring.cloud:spring-cloud-aws-starter-parameter-store'
+	implementation 'io.awspring.cloud:spring-cloud-aws-starter-parameter-store:3.0.0'
 }
 
 tasks.named('test') {
