@@ -13,8 +13,10 @@ public class LoginResponse {
     private Integer expiresIn;
     private String tokenType;
     private String userName;
+    private Long userId;
+    private String userNickname;
 
-    public static LoginResponse fromAdminInitiateAuthResponse(AdminInitiateAuthResponse response, String userName) {
+    public static LoginResponse fromAdminInitiateAuthResponse(AdminInitiateAuthResponse response, String userName, Long userId, String userNickname) {
         if (response == null || response.authenticationResult() == null) {
             throw new IllegalArgumentException("Invalid AdminInitiateAuthResponse");
         }
@@ -26,6 +28,8 @@ public class LoginResponse {
                 .expiresIn(response.authenticationResult().expiresIn())
                 .tokenType(response.authenticationResult().tokenType())
                 .userName(userName)
+                .userId(userId)
+                .userNickname(userNickname)
                 .build();
     }
 }

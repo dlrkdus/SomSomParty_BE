@@ -37,9 +37,12 @@ public class UserController {
 
         AdminInitiateAuthResponse response = (AdminInitiateAuthResponse) result.get("authResponse");
         String username = (String) result.get("username");
+        Long userId = (Long) result.get("userId");
+        String userNickname = (String) result.get("userNickname");
 
-        return ResponseEntity.ok(LoginResponse.fromAdminInitiateAuthResponse(response, username));
+        return ResponseEntity.ok(LoginResponse.fromAdminInitiateAuthResponse(response, username, userId, userNickname));
     }
+
 
     @Operation(summary = "로그아웃", description = "Authorization 헤더로 전달된 토큰을 사용하여 로그아웃합니다.")
     @PostMapping("/signout")
