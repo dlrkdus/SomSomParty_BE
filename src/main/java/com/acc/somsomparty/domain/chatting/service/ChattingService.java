@@ -15,10 +15,12 @@ import com.acc.somsomparty.global.exception.CustomException;
 import com.acc.somsomparty.global.exception.error.ErrorCode;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import software.amazon.awssdk.enhanced.dynamodb.Key;
@@ -30,6 +32,7 @@ import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Transactional
 public class ChattingService {
 
     private final MessageRepository messageRepository;
@@ -37,6 +40,7 @@ public class ChattingService {
     private final ChatRoomRepository chatRoomRepository;
     private final UserChatRoomRepository userChatRoomRepository;
     private final ApplicationEventPublisher applicationEventPublisher;
+    private final RedisTemplate<String, Object> redisTemplate;
 
     public void publishCreateChatRoom(Festival festival) {
         applicationEventPublisher.publishEvent(festival);
@@ -108,6 +112,8 @@ public class ChattingService {
                 .build();
 
         UserChatRoom savedUserChatRoom = userChatRoomRepository.save(userChatRoom);
+        // Redis에서 채팅방 참여자 목록 관리
+        redisTemplate.opsForSet().add("chatRoom:participants:" + chatRoomId,userId.toString());
         return savedUserChatRoom.getChatRoom().getId();
     }
 
@@ -117,11 +123,12 @@ public class ChattingService {
                 .map(userChatRoom -> new UserChatRoomListDto(
                         userChatRoom.getChatRoom().getId(),
                         userChatRoom.getChatRoom().getName(),
-                        (long) userChatRoom.getChatRoom().getUserChatRooms().size()
+                        (long) userChatRoom.getChatRoom().getUserChatRooms().size(),
+                        (Integer) redisTemplate.opsForHash().get("chatRoom:unreadCount",userChatRoom.getChatRoom().getId()+":"+userId)
                 ))
                 .collect(Collectors.toList());
     }
-    
+
     public void deleteUserChatRoom(Long userId, Long chatRoomId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
@@ -131,6 +138,33 @@ public class ChattingService {
         UserChatRoom userChatRoom = userChatRoomRepository.findByUserAndChatRoom(user, chatRoom)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_CHATROOM_NOT_FOUND));
         userChatRoomRepository.delete(userChatRoom);
+        redisTemplate.opsForSet().remove("chatRoom:participants:" + chatRoomId,userId.toString());
+    }
+
+    public void incrementUnreadCount(String key) {
+        String chatRoomId = key.replaceAll("\\D+", "");
+        String participantsKey = "chatRoom:participants:" + chatRoomId;
+        String activeUsersKey = "chatRoom:activeUsers:" + chatRoomId;
+        String unreadCountKey = "chatRoom:unreadCount";
+
+        // 모든 참여 사용자 가져오기
+        Set<Object> allUsers = redisTemplate.opsForSet().members(participantsKey);
+        if (allUsers == null || allUsers.isEmpty()) {
+            return; // 참여자가 없는 경우 종료
+        }
+
+        // 현재 활성 사용자 가져오기
+        Set<Object> activeUsers = redisTemplate.opsForSet().members(activeUsersKey);
+
+        // 비활성 사용자 추출
+        allUsers.forEach(userId -> {
+            if (activeUsers == null || !activeUsers.contains(userId)) {
+                // 비활성 사용자에 대해 읽지 않은 메시지 개수 증가
+                String redisField = chatRoomId + ":" + userId;
+                redisTemplate.opsForHash().increment(unreadCountKey, redisField, 1);
+                log.info("ChatRoom {} 의 안 읽은 메세지 개수 갱신", chatRoomId);
+            }
+        });
     }
 
     /**
