@@ -20,34 +20,34 @@ jobs:
       INSTANCE_IDS: ${{ secrets.INSTANCE_ID_A }},${{ secrets.INSTANCE_ID_C }}
 
     steps:
-      # 1. Checkout code from GitHub
+      # 1. 깃허브 레포에서 코드 가져오기
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      # 2. Configure AWS credentials
+      # 2. AWS IAM 역할로 Github Action 에 AWS 접근 권한 부여
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
-          role-to-assume: arn:aws:iam::${{ env.AWS_ACCOUNT_ID }}:role/${{ secrets.EC2_ROLE_NAME }}
+          role-to-assume: arn:aws:iam::${{ env.AWS_ACCOUNT_ID }}:role/${{ secrets.ACTION_ROLE_NAME }}
           aws-region: ${{ env.AWS_REGION }}
 
-      # 3. Log in to Amazon ECR
+      # 3. Amazon ECR 로그인
       - name: Log in to Amazon ECR
         run: |
           aws ecr get-login-password --region ${{ env.AWS_REGION }} | docker login --username AWS --password-stdin ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com
 
-      # 4. Build Docker Image
+      # 4. 도커 이미지 빌드
       - name: Build Docker Image
         run: |
           docker build -t ${{ env.ECR_REPOSITORY_NAME }}:latest .
           docker tag ${{ env.ECR_REPOSITORY_NAME }}:latest ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY_NAME }}:latest
 
-      # 5. Push to Amazon ECR
+      # 5. ECR 로 빌드한 이미지 푸시
       - name: Push to Amazon ECR
         run: |
           docker push ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY_NAME }}:latest
 
-      # 6. Deploy to EC2 instances via SSM
+      # 6. EC2 배포
       - name: Deploy to EC2 via SSM
         run: |
           aws ssm send-command \
