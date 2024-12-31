@@ -1,6 +1,8 @@
 package com.acc.somsomparty.domain.Notification.service;
 
 import com.acc.somsomparty.domain.Festival.entity.Festival;
+import com.acc.somsomparty.domain.Notification.entity.FcmToken;
+import com.acc.somsomparty.domain.Notification.enums.TokenState;
 import com.acc.somsomparty.domain.Notification.projection.FestivalTokenProjection;
 import com.acc.somsomparty.domain.Notification.repository.FcmTokenRepository;
 import lombok.RequiredArgsConstructor;
@@ -50,10 +52,16 @@ public class NotificationServiceImpl implements NotificationService {
 
             for (FestivalTokenProjection projection : results) {
                 String token = projection.getFcmToken();
+                TokenState tokenState = projection.getTokenState();
                 Festival festival = projection.getFestival();
 
                 if (token == null || token.isEmpty()) {
                     logger.warn("FCM token is missing for festival: {}", festival.getName());
+                    continue;
+                }
+
+                if (tokenState == TokenState.Disabled) {
+                    logger.warn("FCM token is disabled for festival: {}", festival.getName());
                     continue;
                 }
 

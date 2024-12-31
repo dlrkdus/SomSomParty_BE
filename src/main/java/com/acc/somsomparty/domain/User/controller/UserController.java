@@ -57,7 +57,7 @@ public class UserController {
 
     @Operation(summary = "토큰 갱신", description = "리프레시 토큰과 사용자 이름을 사용하여 새로운 액세스 토큰을 발급받습니다.")
     @PostMapping("/refresh-token")
-    public ResponseEntity<RefreshTokenResponse> refreshToken(@RequestHeader("Refresh-Token") String refreshToken, @RequestParam(name = "username") String userName) {
+    public ResponseEntity<RefreshTokenResponse> refreshToken(@RequestHeader("RefreshToken") String refreshToken, @RequestParam(name = "username") String userName) {
         AdminInitiateAuthResponse response = userService.refreshAccessToken(refreshToken, userName);
         return ResponseEntity.ok(RefreshTokenResponse.fromAdminInitiateAuthResponse(response));
     }

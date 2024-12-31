@@ -1,0 +1,44 @@
+spring:
+  datasource:
+    url: ${/somparty/rds/endpoint}
+    username: ${/somparty/rds/user}
+    password: ${/somparty/rds/password}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQLDialect
+  aws:
+    dynamodb:
+      endpoint: ${/somparty/dynamodb/url}
+      region: ap-northeast-2
+  data:
+    redis:
+      host: ${/somparty/elastic_cache/url}
+      port: 6379
+  cloud:
+    aws:
+      queue:
+        region: ${/somparty/region}
+      sqs:
+        queue-name: ${/somparty/sqs/noti}
+    stack:
+      auto: false
+aws:
+  noti:
+    region: ap-northeast-2
+    sqs:
+      queue-name: ${/somparty/sqs/noti}
+    sns:
+      application-arn: ${/somparty/sns/arn}
+
+  auth:
+    cognito:
+      user-pool-id: ${/somparty/cognito/userPoolId}
+      app-client-id: ${/somparty/cognito/clientId}
+      client-secret: ${/somparty/cognito/clientSecret}
+      jwks-url: ${/somparty/cognito/jwksUrl}

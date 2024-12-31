@@ -30,7 +30,8 @@ public class ReservationController {
     @Operation(summary = "예약하기", description = "사용자 정보와 예약 날짜로 예약합니다.")
     @PostMapping("")
     public ResponseEntity<ReservationResponseDTO.makeReservationResultDTO> makeReservation(@RequestBody ReservationRequestDTO.makeReservationDTO request) {
-        ReservationResponseDTO.makeReservationResultDTO reservationResultDTO = reservationCommandService.makeReservation(request);
+        Long userId = userService.getIdByAuthentication();
+        ReservationResponseDTO.makeReservationResultDTO reservationResultDTO = reservationCommandService.makeReservation(userId, request);
         return new ResponseEntity<>(reservationResultDTO, HttpStatus.OK);
     }
 }

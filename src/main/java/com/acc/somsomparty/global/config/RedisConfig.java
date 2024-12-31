@@ -1,7 +1,6 @@
 package com.acc.somsomparty.global.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,10 +9,7 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.ReactiveRedisTemplate;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
-import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
-import org.springframework.data.redis.serializer.RedisSerializationContext;
-import org.springframework.data.redis.serializer.StringRedisSerializer;
+import org.springframework.data.redis.serializer.*;
 
 @Configuration
 public class RedisConfig {
@@ -42,11 +38,13 @@ public class RedisConfig {
 
         // Key는 String 타입, 값은 JSON 직렬화 방식으로 설정
         redisTemplate.setKeySerializer(new StringRedisSerializer());
+        redisTemplate.setHashKeySerializer(new StringRedisSerializer());
 
         // Jackson2JsonRedisSerializer에 ObjectMapper 전달
         Jackson2JsonRedisSerializer<Object> serializer = new Jackson2JsonRedisSerializer<>(Object.class);
         serializer.setObjectMapper(objectMapper);
         redisTemplate.setValueSerializer(serializer);
+        redisTemplate.setHashValueSerializer(serializer);
 
         return redisTemplate;
     }

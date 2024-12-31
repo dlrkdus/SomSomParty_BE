@@ -24,9 +24,9 @@ public class ReservationCommandServiceImpl implements ReservationCommandService{
 
     @Override
     @Transactional
-    public ReservationResponseDTO.makeReservationResultDTO makeReservation(ReservationRequestDTO.makeReservationDTO request) {
+    public ReservationResponseDTO.makeReservationResultDTO makeReservation(Long userId, ReservationRequestDTO.makeReservationDTO request) {
         Ticket ticket = ticketRepository.findByFestivalIdAndFestivalDateWithLock(request.getFestivalId(), request.getFestivalDate()).orElseThrow(() -> new CustomException(ErrorCode.TICKET_NOT_FOUND));
-        User user = userRepository.findById(request.getUserId()).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        User user = userRepository.findById(userId).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         if(ticket.getLeftTickets() >= 1) {
             ticket.setLeftTickets(ticket.getLeftTickets() - 1);
