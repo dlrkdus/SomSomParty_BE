@@ -1,5 +1,7 @@
 package com.acc.somsomparty.domain.Queue.config;
 
+import static software.amazon.awssdk.regions.Region.AP_NORTHEAST_2;
+
 import io.awspring.cloud.sqs.config.SqsBootstrapConfiguration;
 import io.awspring.cloud.sqs.config.SqsMessageListenerContainerFactory;
 import io.awspring.cloud.sqs.listener.acknowledgement.AcknowledgementOrdering;
@@ -21,7 +23,7 @@ public class AwsSQSConfig {
     public SqsAsyncClient sqsAsyncClient() {
         return SqsAsyncClient.builder()
                 .credentialsProvider(DefaultCredentialsProvider.create()) // IAM 역할 기반 인증
-                .region(Region.of(System.getenv("AWS_REGION"))) // 환경 변수에서 AWS Region 읽기
+                .region(Region.of(String.valueOf(AP_NORTHEAST_2))) // 환경 변수에서 AWS Region 읽기
                 .build();
     }
 
