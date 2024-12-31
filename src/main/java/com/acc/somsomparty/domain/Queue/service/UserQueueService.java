@@ -28,7 +28,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Slf4j
 @RequiredArgsConstructor
 public class UserQueueService {
-    private final ReactiveRedisTemplate<String, Long> reactiveRedisTemplate;
+    private final ReactiveRedisTemplate<String, String> reactiveRedisTemplate;
     private final RedisTemplate<String, String> redisTemplate;
     private final RedissonClient redissonClient;
     private final SqsSender sqsSender;
@@ -43,20 +43,20 @@ public class UserQueueService {
     // 유저 대기열 등록
     // redis의 sorted set을 대기열로 사용 ( key : user PK , value : unix timestamp)
     // 현재 본인의 순위를 return 함
-    public Mono<Long> registerWaitQueue(final String queue, final Long userId) {
+    public Mono<Long> registerWaitQueue(final String queue, final String email) {
         var unixTimestamp = Instant.now().getEpochSecond(); // 현재 시간
-        return reactiveRedisTemplate.opsForZSet().add(USER_QUEUE_WAIT_KEY.formatted(queue), userId, unixTimestamp)
+        return reactiveRedisTemplate.opsForZSet().add(USER_QUEUE_WAIT_KEY.formatted(queue), email, unixTimestamp)
                 .filter(i -> i) // add를 성공하면 true, 실패하면 false를 return
                 .switchIfEmpty(Mono.error(new CustomException(ErrorCode.QUEUE_ALREADY_REGISTERED_USER))) // false -> 유저가 이미 queue에 등록 된 경우
                 .flatMap(i -> { // true ->
                     // SQS에
-                    String messageContent = "User" + userId + "가 " + queue + " 대기열로 입장함";
+                    String messageContent = email + "가 " + queue + " 대기열로 입장함";
                     // 동기적으로 메시지를 전송하고 결과를 받음
                     SendResult<String> result = sqsSender.send(messageContent);
                     log.info("메시지 전송 결과: {}", result);
 
                     // 대기열에서 유저의 rank 조회
-                    return reactiveRedisTemplate.opsForZSet().rank(USER_QUEUE_WAIT_KEY.formatted(queue), userId);
+                    return reactiveRedisTemplate.opsForZSet().rank(USER_QUEUE_WAIT_KEY.formatted(queue), email);
                 })
                 .map(i -> i >= 0 ? i + 1 : i); // rank에 1 더해서 리턴(rank는 0부터 시작)
     }
@@ -127,17 +127,17 @@ public class UserQueueService {
     // id(PK)가 있는지 proceed queue에서 찾음
     // rank()가 0 이상의 값을 반환하면, rank >= 0이 true가 되어 입장이 허용된 상태로 판단,
     // rank()가 null을 반환하면, defaultIfEmpty(-1L)에 의해 -1L이 반환되고, rank >= 0이 false가 되어 입장이 허용되지 않은 상태로 판단
-    public Mono<Boolean> isAllowed(final String queue, final Long userId) {
+    public Mono<Boolean> isAllowed(final String queue, final String email) {
         log.info("유저의 진입이 허용되었는지 체크");
-        return reactiveRedisTemplate.opsForZSet().rank(USER_QUEUE_PROCEED_KEY.formatted(queue), userId)
+        return reactiveRedisTemplate.opsForZSet().rank(USER_QUEUE_PROCEED_KEY.formatted(queue), email)
                 .defaultIfEmpty(-1L) // 아직 대기 완료 대기열에 없다면 -1를 return
                 .map(rank -> rank >= 0); // 있다면 rank를 return
     }
 
     // 대기열에서 몇 번째 순위인지를 알려주는 함수
-    public Mono<Long> getRank(final String queue, final Long userId) {
-        log.info("userId = {}", userId);
-        return reactiveRedisTemplate.opsForZSet().rank(USER_QUEUE_WAIT_KEY.formatted(queue), userId)
+    public Mono<Long> getRank(final String queue, final String email) {
+        log.info("email = {}", email);
+        return reactiveRedisTemplate.opsForZSet().rank(USER_QUEUE_WAIT_KEY.formatted(queue), email)
                 .defaultIfEmpty(-1L) // 대기열에 없다면 -1을 return
                 .map(rank -> rank >= 0 ? rank + 1 : rank)
                 .onErrorReturn(-1L); // 오류 발생 시 -1 반환
@@ -146,9 +146,10 @@ public class UserQueueService {
     // 유저를 입장 허용 큐로 이동시킴
     // 대기열queue에서 입장허용 queue로 유저를 옮기는 함수 ( 3명씩 )
     // sqs에서 메세지가 오면 트리거되서 작동됨
-    @SqsListener(value = "spring-sqs")
+    @SqsListener(value = "queue")
     public void moveUsersToAllowedQueue(Acknowledgement acknowledgement) {
         // 허용할 유저 수 (3명)
+        System.out.println("오잉");
         var maxAllowUserCount = 3L;
 
         // 대기열에서 유저를 스캔하여 입장 허용 큐로 이동
@@ -170,17 +171,17 @@ public class UserQueueService {
     }
 
     // 페이지 이탈시 대기열에서 삭제
-    public Mono<Void> removeUserFromWaitQueue(final String queue, final Long userId) {
-        log.info("유저 삭제 시도: queue = {}, userId = {}", queue, userId);
-        return reactiveRedisTemplate.opsForZSet().remove(USER_QUEUE_WAIT_KEY.formatted(queue), userId)
+    public Mono<Void> removeUserFromWaitQueue(final String queue, final String email) {
+        log.info("유저 삭제 시도: queue = {}, email = {}", queue, email);
+        return reactiveRedisTemplate.opsForZSet().remove(USER_QUEUE_WAIT_KEY.formatted(queue), email)
                 .doOnSuccess(count -> log.info("삭제된 유저 수: {}", count))
                 .then(); // Mono<Void> 반환
     }
 
     // 타겟 페이지로 이동 시 대기 완료 열에서 삭제
-    public Mono<Void> removeUserFromWaitProceedQueue(final String queue, final Long userId) {
-        log.info("유저 삭제 시도: queue = {}, userId = {}", queue, userId);
-        return reactiveRedisTemplate.opsForZSet().remove(USER_QUEUE_PROCEED_KEY.formatted(queue), userId)
+    public Mono<Void> removeUserFromWaitProceedQueue(final String queue, final String email) {
+        log.info("유저 삭제 시도: queue = {}, email = {}", queue, email);
+        return reactiveRedisTemplate.opsForZSet().remove(USER_QUEUE_PROCEED_KEY.formatted(queue), email)
                 .doOnSuccess(count -> log.info("삭제된 유저 수: {}", count))
                 .then(); // Mono<Void> 반환
     }
