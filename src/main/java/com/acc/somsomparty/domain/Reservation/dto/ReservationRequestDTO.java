@@ -7,9 +7,7 @@ import java.time.LocalDate;
 
 public class ReservationRequestDTO {
     @Getter
-    @Builder
     public static class makeReservationDTO {
-        Long userId;
         Long festivalId;
         LocalDate festivalDate;
     }
