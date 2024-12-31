@@ -37,6 +37,7 @@ aws:
     region: ${region}
     sqs:
       queue-name: ${noti_sqs.name}
+      queue-url: ${noti_sqs.url}
     sns:
       application-arn: ${noti_sns.arn}
 
