@@ -65,6 +65,8 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 	implementation "org.redisson:redisson-spring-boot-starter:3.40.2"
 	implementation 'io.awspring.cloud:spring-cloud-aws-starter-parameter-store'
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
 }
 
 tasks.named('test') {
