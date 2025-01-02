@@ -1,6 +1,7 @@
 package com.acc.somsomparty.domain.Notification.entity;
 
 import com.acc.somsomparty.domain.Notification.enums.DeviceType;
+import com.acc.somsomparty.domain.Notification.enums.TokenState;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -31,4 +32,7 @@ public class FcmToken {
     private LocalDateTime updatedDate;   // fcm 토큰 갱신 날짜
 
     private Long userId;  // user 정보
+
+    @Enumerated(EnumType.STRING)
+    private TokenState tokenState;
 }

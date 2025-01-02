@@ -4,6 +4,8 @@ import com.acc.somsomparty.domain.Queue.dto.AllowedUserResponse;
 import com.acc.somsomparty.domain.Queue.dto.FestivalWaitingRoomResponse;
 import com.acc.somsomparty.domain.Queue.dto.RankNumberResponse;
 import com.acc.somsomparty.domain.Queue.service.UserQueueService;
+import com.acc.somsomparty.domain.User.service.UserService;
+import com.acc.somsomparty.domain.User.service.UserServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +16,7 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class UserQueueController {
     private final UserQueueService userQueueService;
+    private final UserService userService;
 
     @Operation(summary = "대기열 등록", description = "유저를 대기열에 등록합니다. 이미 등록된 유저라면, 현재 대기열에서의 순위를 반환합니다.(email 임시 설정)")
     @GetMapping("/{queue}/waiting-room/users/{email}")

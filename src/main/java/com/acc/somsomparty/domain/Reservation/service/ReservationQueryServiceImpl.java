@@ -4,6 +4,8 @@ import com.acc.somsomparty.domain.Reservation.converter.ReservationConverter;
 import com.acc.somsomparty.domain.Reservation.dto.ReservationResponseDTO;
 import com.acc.somsomparty.domain.Reservation.entity.Reservation;
 import com.acc.somsomparty.domain.Reservation.repository.ReservationRepository;
+import com.acc.somsomparty.domain.User.entity.User;
+import com.acc.somsomparty.domain.User.repository.UserRepository;
 import com.acc.somsomparty.global.exception.CustomException;
 import com.acc.somsomparty.global.exception.error.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -17,17 +19,20 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ReservationQueryServiceImpl implements ReservationQueryService {
     private final ReservationRepository reservationRepository;
+    private final UserRepository userRepository;
 
     @Override
     public ReservationResponseDTO.ReservationPreViewListDTO getReservationList(Long userId, Long lastId, int limit) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
         List<Reservation> result;
         PageRequest pageRequest = PageRequest.of(0, limit + 1);
         if (lastId.equals(0L)) {
-            result = reservationRepository.findAllByUserIdOrderByCreatedAtDesc(userId, pageRequest).getContent();
+            result = reservationRepository.findAllByUserIdOrderByCreatedAtDesc(user.getId(), pageRequest).getContent();
         }
         else {
             Reservation reservation = reservationRepository.findById(lastId).orElseThrow(() -> new CustomException(ErrorCode.FESTIVAL_NOT_FOUND));
-            result = reservationRepository.findByUserIdAndCreatedAtLessThanOrderByCreatedAtDesc(userId, reservation.getCreatedAt(), pageRequest).getContent();
+            result = reservationRepository.findByUserIdAndCreatedAtLessThanOrderByCreatedAtDesc(user.getId(), reservation.getCreatedAt(), pageRequest).getContent();
         }
         return generateReservationPreviewListDTO(result, limit);
     }

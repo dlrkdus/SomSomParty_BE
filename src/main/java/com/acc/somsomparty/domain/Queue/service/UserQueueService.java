@@ -146,9 +146,10 @@ public class UserQueueService {
     // 유저를 입장 허용 큐로 이동시킴
     // 대기열queue에서 입장허용 queue로 유저를 옮기는 함수 ( 3명씩 )
     // sqs에서 메세지가 오면 트리거되서 작동됨
-    @SqsListener(value = "spring-sqs")
+    @SqsListener(value = "queue")
     public void moveUsersToAllowedQueue(Acknowledgement acknowledgement) {
         // 허용할 유저 수 (3명)
+        System.out.println("오잉");
         var maxAllowUserCount = 3L;
 
         // 대기열에서 유저를 스캔하여 입장 허용 큐로 이동

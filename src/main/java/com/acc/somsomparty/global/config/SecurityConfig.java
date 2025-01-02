@@ -1,6 +1,7 @@
 package com.acc.somsomparty.global.config;
 
-import com.acc.somsomparty.global.filter.JwtFilter;
+import com.acc.somsomparty.global.filter.JwtAuthFilter;
+import com.acc.somsomparty.global.filter.JwtExceptionFilter;
 import com.acc.somsomparty.global.util.JwtUtil;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,10 +29,11 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(auth -> auth
-                        // .requestMatchers("/test").authenticated()
+                        .requestMatchers("/reservations/**", "/notification/*").authenticated()
                         .anyRequest().permitAll()
                 )
-                .addFilterBefore(new JwtFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new JwtAuthFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtExceptionFilter(), JwtAuthFilter.class);
 
         return http.build();
     }

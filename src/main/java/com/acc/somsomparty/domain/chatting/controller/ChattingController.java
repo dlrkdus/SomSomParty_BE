@@ -1,5 +1,6 @@
 package com.acc.somsomparty.domain.chatting.controller;
 
+import com.acc.somsomparty.domain.User.service.UserService;
 import com.acc.somsomparty.domain.chatting.dto.MessageListResponse;
 import com.acc.somsomparty.domain.chatting.dto.UserChatRoomListDto;
 import com.acc.somsomparty.domain.chatting.service.ChattingService;
@@ -27,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/festivals/chatting")
 public class ChattingController {
     private final ChattingService chattingService;
+    private final UserService userService;
 
     @Operation(
             summary = "채팅방 진입 API",
@@ -52,9 +54,8 @@ public class ChattingController {
             description = "회원이 채팅방에 처음 참여하는 경우 참여 채팅방 목록에 추가한다."
     )
     @PostMapping("/{chatRoomId}/join")
-    public ResponseEntity<Long> joinChatRoom(
-            @PathVariable Long chatRoomId,
-            @RequestParam Long userId) {
+    public ResponseEntity<Long> joinChatRoom(@PathVariable Long chatRoomId) {
+        Long userId = userService.getIdByAuthentication();
         return new ResponseEntity<>(chattingService.joinChatRoom(userId,chatRoomId), HttpStatus.OK);
     }
 
@@ -62,8 +63,9 @@ public class ChattingController {
             summary = "참여중인 채팅방 목록 API",
             description = "회원이 참여 중인 채팅방 목록을 보내준다."
     )
-    @GetMapping("/list/{userId}")
-    public ResponseEntity<List<UserChatRoomListDto>> getChatRoomList(@PathVariable Long userId){
+    @GetMapping("/list")
+    public ResponseEntity<List<UserChatRoomListDto>> getChatRoomList(){
+        Long userId = userService.getIdByAuthentication();
         return ResponseEntity.ok(chattingService.getUserChatRoomList(userId));
     }
 
@@ -71,8 +73,9 @@ public class ChattingController {
             summary = "채팅방 나가기 API",
             description = "회원이 참여중인 채팅방을 나가기"
     )
-    @DeleteMapping("/delete/{userId}")
-    public ResponseEntity<Void> leaveChatRoom(@PathVariable Long userId, @RequestParam Long chatRoomId){
+    @DeleteMapping("/delete")
+    public ResponseEntity<Void> leaveChatRoom(@RequestParam Long chatRoomId){
+        Long userId = userService.getIdByAuthentication();
         chattingService.deleteUserChatRoom(userId, chatRoomId);
         return ResponseEntity.ok().build();
     }

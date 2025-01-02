@@ -155,9 +155,15 @@ public class UserServiceImpl implements UserService {
 
             String username = getCognitoUsername(email);
 
+            User user = userRepository.findByEmail(email);
+            Long userId = user.getId();
+            String userNickname = user.getName();
+
             Map<String, Object> result = new HashMap<>();
             result.put("authResponse", response);
             result.put("username", username);
+            result.put("userId", userId);
+            result.put("userNickname", userNickname);
 
             return result;
         } catch (NotAuthorizedException e) {
@@ -205,7 +211,7 @@ public class UserServiceImpl implements UserService {
             return true;
         } catch (NotAuthorizedException e) {
             logger.warn("Unauthorized token access", e);
-            throw new CustomException(ErrorCode.UNAUTHORIZED);
+            throw new CustomException(ErrorCode.ACCESS_TOKEN_EXPIRED);
         } catch (CognitoIdentityProviderException e) {
             logger.error("Error during token verification", e);
             throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR);
