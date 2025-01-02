@@ -68,12 +68,5 @@ aws:
 
 logging:
   level:
-    root: INFO
+    root: DEBUG
     org.apache.kafka: ERROR
-    kafka: ERROR
-    kafka.network: ERROR
-    kafka.request.logger: ERROR
-    kafka.controller: ERROR
-    kafka.log: ERROR
-    state.change.logger: ERROR
-    org.apache.zookeeper: ERROR
