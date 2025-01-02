@@ -1,11 +1,7 @@
 spring:
+  config:
+    import: aws-parameterstore:/config/somparty/
   profiles:
-    active: dev
-
-server:
-  port: 8080
-
-cloud:
-  aws:
-    parameterstore:
-      enabled: true
+    active: prod
+  server:
+    port: 8080
