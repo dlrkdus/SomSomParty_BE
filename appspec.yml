@@ -14,6 +14,6 @@ permissions:
 
 hooks:
   AfterInstall:
-    - location: scripts/afterInstall.sh
+    - location: scripts/afterInstall.sh >> /home/ubuntu/afterInstall.log
       timeout: 60
       runas: ubuntu
