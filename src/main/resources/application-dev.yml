@@ -55,7 +55,7 @@ aws:
 
 logging:
   level:
-    root: DEBUG
+    root: INFO
     org.apache.kafka: ERROR
     kafka: ERROR
     kafka.network: ERROR
