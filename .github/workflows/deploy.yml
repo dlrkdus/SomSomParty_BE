@@ -1,4 +1,4 @@
-name: Build, Push to ECR, and Update ASG
+name: Build, Push to ECR, and Deploy via CodeDeploy
 
 on:
   push:
@@ -17,6 +17,9 @@ jobs:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       ECR_REPOSITORY_NAME: somparty
       AWS_REGION: ap-northeast-2
+      S3_BUCKET: ${{ secrets.S3_BUCKET_NAME }}
+      CODEDEPLOY_APP_NAME: ${{ secrets.CODEDEPLOY_APP_NAME }}
+      CODEDEPLOY_DEPLOYMENT_GROUP_NAME: ${{ secrets.CODEDEPLOY_DEPLOYMENT_GROUP_NAME }}
 
     steps:
       # 1. Java 17 설치
@@ -59,17 +62,17 @@ jobs:
         run: |
           docker push ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY_NAME }}:latest
 
-      # 8. 새로운 AMI 생성
-      - name: Create a new AMI
+      # 8. CodeDeploy에 필요한 파일 압축 및 S3 업로드
+      - name: Prepare and Upload Deployment Package
         run: |
-          INSTANCE_ID=$(aws ec2 describe-instances --filters "Name=tag:Name,Values=BaseImageInstance" --query "Reservations[].Instances[].InstanceId" --output text --region ${{ env.AWS_REGION }})
-          AMI_ID=$(aws ec2 create-image --instance-id $INSTANCE_ID --name "somparty-$(date +'%Y-%m-%d-%H-%M-%S')" --output text --query "ImageId" --region ${{ env.AWS_REGION }})
-          echo "AMI_ID=${AMI_ID}" >> $GITHUB_ENV
+          zip -r deploy.zip appspec.yml scripts/
+          aws s3 cp deploy.zip s3://${{ env.S3_BUCKET }}/deploy.zip --region ${{ env.AWS_REGION }}
 
-      # 9. 오토스케일링 그룹 업데이트
-      - name: Update Auto Scaling Group
+      # 9. CodeDeploy로 배포 실행
+      - name: Start CodeDeploy Deployment
         run: |
-          aws autoscaling update-auto-scaling-group \
-            --auto-scaling-group-name ${{ secrets.ASG_NAME }} \
-            --launch-template "LaunchTemplateName=${{ secrets.LAUNCH_TEMPLATE_NAME }},Version=\$Latest" \
+          aws deploy create-deployment \
+            --application-name ${{ env.CODEDEPLOY_APP_NAME }} \
+            --deployment-group-name ${{ env.CODEDEPLOY_DEPLOYMENT_GROUP_NAME }} \
+            --s3-location bucket=${{ env.S3_BUCKET }},key=deploy.zip,bundleType=zip \
             --region ${{ env.AWS_REGION }}
