@@ -3,7 +3,7 @@ name: Build, Push to ECR, and Deploy via CodeDeploy
 on:
   push:
     branches:
-      - test
+      - dev
 
 permissions:
   id-token: write
