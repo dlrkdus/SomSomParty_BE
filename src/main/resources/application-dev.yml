@@ -52,3 +52,15 @@ aws:
       app-client-id: ${COGNITO_APP_CLIENT_ID}
       client-secret: ${COGNITO_CLIENT_SECRET}
       jwks-url: ${COGNITO_JWKS_URL}
+
+logging:
+  level:
+    root: INFO
+    org.apache.kafka: ERROR
+    kafka: ERROR
+    kafka.network: ERROR
+    kafka.request.logger: ERROR
+    kafka.controller: ERROR
+    kafka.log: ERROR
+    state.change.logger: ERROR
+    org.apache.zookeeper: ERROR

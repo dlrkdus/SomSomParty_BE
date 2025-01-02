@@ -65,3 +65,15 @@ aws:
       sasl.mechanism: AWS_MSK_IAM
       sasl.jaas.config: software.amazon.msk.auth.iam.IAMLoginModule required;
       sasl.client.callback.handler.class: software.amazon.msk.auth.iam.IAMClientCallbackHandler
+
+logging:
+  level:
+    root: INFO
+    org.apache.kafka: ERROR
+    kafka: ERROR
+    kafka.network: ERROR
+    kafka.request.logger: ERROR
+    kafka.controller: ERROR
+    kafka.log: ERROR
+    state.change.logger: ERROR
+    org.apache.zookeeper: ERROR
