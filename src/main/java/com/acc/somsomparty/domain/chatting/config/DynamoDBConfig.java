@@ -13,14 +13,13 @@ import software.amazon.awssdk.regions.Region;
 public class DynamoDBConfig {
 
 
-    @Value("${dynamodb.endpoint:}")
+    @Value("${spring.aws.dynamodb.endpoint:http://localhost:8000}")
     private String dynamoDbEndpoint;
 
     @Bean
     public DynamoDbClient dynamoDbClient() {
         return DynamoDbClient.builder()
                 .region(Region.AP_NORTHEAST_2)
-                // 환경 변수에 저장된 키를 기반으로 자동으로 생성
                 .endpointOverride(URI.create(dynamoDbEndpoint))
                 .credentialsProvider(DefaultCredentialsProvider.create())
                 .build();
