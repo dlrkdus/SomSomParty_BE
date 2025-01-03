@@ -65,7 +65,7 @@ jobs:
       # 8. CodeDeploy에 필요한 파일 압축 및 S3 업로드
       - name: Prepare and Upload Deployment Package
         run: |
-          zip -r deploy.zip appspec.yml scripts/
+          zip -r deploy.zip docker-compose.yml appspec.yml scripts/
           aws s3 cp deploy.zip s3://${{ env.S3_BUCKET }}/deploy.zip --region ${{ env.AWS_REGION }}
 
       # 9. CodeDeploy로 배포 실행
