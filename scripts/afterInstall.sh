@@ -19,13 +19,3 @@ sudo docker-compose -f /home/ubuntu/somparty/docker-compose.yml pull
 # 4. Docker Compose 서비스 재시작
 echo "Starting new Docker Compose services..."
 sudo docker-compose -f /home/ubuntu/somparty/docker-compose.yml up -d
-
-# 5. Spring Boot 애플리케이션 상태 확인
-echo "Validating the Spring Boot application health..."
-status_code=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8080/actuator/health || echo "000")
-if [ "$status_code" -eq 200 ]; then
-  echo "Spring Boot application is running successfully with status code $status_code."
-else
-  echo "Spring Boot application validation failed with status code $status_code."
-  exit 1
-fi
