@@ -47,25 +47,6 @@ aws:
       app-client-id: ${cognito.client_id}
       client-secret: ${cognito.client_secret}
       jwks-url: ${cognito.jwks_url}
-
-  kafka:
-    bootstrap-servers:
-      - ${kafka.broker1}
-      - ${kafka.broker2}
-      - ${kafka.broker3}
-    consumer:
-      auto-offset-reset: earliest
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-    producer:
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.apache.kafka.common.serialization.StringSerializer
-    properties:
-      security.protocol: SASL_SSL
-      sasl.mechanism: AWS_MSK_IAM
-      sasl.jaas.config: software.amazon.msk.auth.iam.IAMLoginModule required;
-      sasl.client.callback.handler.class: software.amazon.msk.auth.iam.IAMClientCallbackHandler
-
 logging:
   level:
     root: INFO
