@@ -1,6 +1,4 @@
 spring:
-  config:
-    import: aws-parameterstore:/config/somparty/
   profiles:
     active: prod
   server:
