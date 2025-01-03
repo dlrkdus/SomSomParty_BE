@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: ${rds.url}
-    username: ${rds.user}
-    password: ${rds.password}
+    url: jdbc:mysql://somparty-rds.c1gukyuossno.ap-northeast-2.rds.amazonaws.com:3306/somsomparty
+    username: admin
+    password: somparty
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
@@ -14,39 +14,39 @@ spring:
         dialect: org.hibernate.dialect.MySQLDialect
   aws:
     dynamodb:
-      endpoint: ${dynamodb.url}
-      region: ${region}
+      endpoint: http://dynamodb.ap-northeast-2.amazonaws.com
+      region: ap-northeast-2
   data:
     redis:
-      host: ${elastic_cache.url}
+      host: somparty-elasticcache.urgh9x.ng.0001.apn2.cache.amazonaws.com
       port: 6379
   cloud:
     aws:
       region:
-        static: ${region}
+        static: ap-northeast-2
         credentials:
           instance-profile: true # IAM 역할 사용
         stack:
           auto: false
       queue:
-        region: ${region}
+        region: ap-northeast-2
       sqs:
-        queue-name: ${wait_sqs.name}
+        queue-name: queue
 aws:
   noti:
-    region: ${region}
+    region: ap-northeast-2
     sqs:
-      queue-name: ${noti_sqs.name}
-      queue-url: ${noti_sqs.url}
+      queue-name: noti
+      queue-url: https://sqs.ap-northeast-2.amazonaws.com/084828566517/noti
     sns:
-      application-arn: ${noti_sns.arn}
+      application-arn: arn:aws:sns:ap-northeast-2:084828566517:app/GCM/somsomparty
 
   auth:
     cognito:
-      user-pool-id: ${cognito.user_pool_id}
-      app-client-id: ${cognito.client_id}
-      client-secret: ${cognito.client_secret}
-      jwks-url: ${cognito.jwks_url}
+      user-pool-id: ap-northeast-2_mPKDxPA6G
+      app-client-id: 5spu1idqiakqb8u3isgs7jotsa
+      client-secret: 1d88f60661q9vja4odh0m3f7kelrr34tk5n25kuv6ut2id05fbpv
+      jwks-url: https://cognito-idp.ap-northeast-2.amazonaws.com/ap-northeast-2_mPKDxPA6G
 logging:
   level:
     root: INFO
