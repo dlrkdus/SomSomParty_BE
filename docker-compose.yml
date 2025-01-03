@@ -29,19 +29,19 @@ services:
       KAFKA_NUM_PARTITIONS: 3
       KAFKA_HEAP_OPTS: "-Xmx512M -Xms512M"
 
-#  spring-app:
-#    image: 084828566517.dkr.ecr.ap-northeast-2.amazonaws.com/somparty:latest
-#    restart: always
-#    container_name: spring-app
-#    ports:
-#      - '8080:8080'
-#    depends_on:
-#      - kafka
-#    environment:
-#      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
-#    networks:
-#      - app_network
-#
-#networks:
-#  app_network:
-#    driver: bridge
+  spring-app:
+    image: 084828566517.dkr.ecr.ap-northeast-2.amazonaws.com/somparty:latest
+    restart: always
+    container_name: spring-app
+    ports:
+      - '8080:8080'
+    depends_on:
+      - kafka
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    networks:
+      - app_network
+
+networks:
+  app_network:
+    driver: bridge
