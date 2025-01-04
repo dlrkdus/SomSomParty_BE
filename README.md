@@ -7,6 +7,7 @@
 
 ## 서비스 주요 기능
 1. 회원가입, 로그인
+   - 기본 정보(이메일, 비밀번호, 이름)를 입력하여 간편하게 회원가입할 수 있으며, 가입한 계정을 통해 서비스 이용 가능
 2. 축제 정보 제공
     - 축제 이름, 시작일과 종료일, 상세 설명 등 축제에 대한 전반적인 정보를 한눈에 확인할 수 있도록 제공
 3. 축제 예약 
@@ -26,7 +27,7 @@
 
 ## 기술 스택
 - Tech Stack
-  - Spring Boot, Spring JPA, Spring Security, JWT, AWS Cognito, AWS SQS, Kafka, Stomp
+  - Spring Boot, Spring JPA, Spring Security, JWT, AWS Cognito, AWS SQS, Kafka, Stomp, Firebase Cloud Messaging, AWS EventBridge, AWS SNS, AWS SQS
 - DB
   - AWS RDS(MySQL), AWS ElastiCache, DynamoDB
 - DevOps
@@ -95,6 +96,24 @@
 
 
 ## 회원가입/로그인
+### AWS Cognito + Spring Security + JWT
+AWS Cognito는 사용자 인증, 권한 부여, 사용자 관리를 위한 클라우드 서비스이며, 인증 토큰 발행을 통해 사용자 인증을 간편하게 처리할 수 있습니다. Cognito가 발급한 JWT 토큰을 Spring Security가 검증하도록 하여 보안 정책을 적용하였습니다.
+
+<br/>
+
+- 회원가입
+![회원가입-로직](https://github.com/user-attachments/assets/1d30f61b-1350-4cfe-86b8-40c709dcab9b)
+
+- 로그인
+  ![로그인-로직](https://github.com/user-attachments/assets/617476b4-5d06-4368-aab4-a83dd8549ec3)
+
+<br/>
+
+![회원가입](https://github.com/user-attachments/assets/66f5e935-b105-4a5f-9e3f-6577d16d5c92)
+
+<br/>
+
+![로그인-로그아웃](https://github.com/user-attachments/assets/728c9779-9ee6-4e1f-8fe4-e3817cf18e47)
 
 
 <br/>
