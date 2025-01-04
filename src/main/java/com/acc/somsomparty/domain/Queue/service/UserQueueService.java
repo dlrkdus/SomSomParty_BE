@@ -101,7 +101,7 @@ public class UserQueueService {
 
         return Mono.fromCallable(() -> {
                     // 락 획득 대기 시간 및 유지 시간 설정
-                    boolean isLocked = rLock.tryLock(5, 3, TimeUnit.SECONDS);
+                    boolean isLocked = rLock.tryLock(3, 5, TimeUnit.SECONDS);
                     if (!isLocked) {
                         throw new CustomException(ErrorCode.LOCK_ACQUISITION_FAILED);
                     }
@@ -149,8 +149,7 @@ public class UserQueueService {
     @SqsListener(value = "queue")
     public void moveUsersToAllowedQueue(Acknowledgement acknowledgement) {
         // 허용할 유저 수 (3명)
-        System.out.println("오잉");
-        var maxAllowUserCount = 3L;
+        var maxAllowUserCount = 10L;
 
         // 대기열에서 유저를 스캔하여 입장 허용 큐로 이동
         reactiveRedisTemplate.scan(ScanOptions.scanOptions()
