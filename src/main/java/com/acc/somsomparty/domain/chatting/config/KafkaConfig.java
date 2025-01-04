@@ -2,8 +2,10 @@ package com.acc.somsomparty.domain.chatting.config;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.common.config.SaslConfigs;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.context.annotation.Bean;
@@ -26,9 +28,10 @@ public class KafkaConfig {
         config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, KAFKA_BROKER);
         config.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-        config.put("security.protocol", "SASL_SSL");
-        config.put("sasl.mechanism", "AWS_MSK_IAM");
-        config.put("sasl.jaas.config", "software.amazon.msk.auth.iam.IAMLoginModule required;");
+        config.put(AdminClientConfig.SECURITY_PROTOCOL_CONFIG, "SASL_SSL");
+        config.put(SaslConfigs.SASL_MECHANISM, "AWS_MSK_IAM");
+        config.put(SaslConfigs.SASL_JAAS_CONFIG,"software.amazon.msk.auth.iam.IAMLoginModule required awsProfileName=\"somparty_EC2_IAM\";");
+        config.put(SaslConfigs.SASL_CLIENT_CALLBACK_HANDLER_CLASS, "software.amazon.msk.auth.iam.IAMClientCallbackHandler");
         return new DefaultKafkaProducerFactory<>(config);
     }
 
@@ -45,9 +48,10 @@ public class KafkaConfig {
         config.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest"); // 가장 처음부터 메시지 읽기
         config.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         config.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-        config.put("security.protocol", "SASL_SSL");
-        config.put("sasl.mechanism", "AWS_MSK_IAM");
-        config.put("sasl.jaas.config", "software.amazon.msk.auth.iam.IAMLoginModule required;");
+        config.put(AdminClientConfig.SECURITY_PROTOCOL_CONFIG, "SASL_SSL");
+        config.put(SaslConfigs.SASL_MECHANISM, "AWS_MSK_IAM");
+        config.put(SaslConfigs.SASL_JAAS_CONFIG,"software.amazon.msk.auth.iam.IAMLoginModule required awsProfileName=\"somparty_EC2_IAM\";");
+        config.put(SaslConfigs.SASL_CLIENT_CALLBACK_HANDLER_CLASS, "software.amazon.msk.auth.iam.IAMClientCallbackHandler");
         return new DefaultKafkaConsumerFactory<>(config);
     }
 

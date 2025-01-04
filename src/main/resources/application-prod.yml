@@ -61,8 +61,3 @@ aws:
       app-client-id: 5spu1idqiakqb8u3isgs7jotsa
       client-secret: 1d88f60661q9vja4odh0m3f7kelrr34tk5n25kuv6ut2id05fbpv
       jwks-url: https://cognito-idp.ap-northeast-2.amazonaws.com/ap-northeast-2_mPKDxPA6G
-
-logging:
-  level:
-    root: INFO
-    org.apache.kafka: ERROR, WARN
