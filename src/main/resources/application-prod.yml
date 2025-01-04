@@ -33,13 +33,19 @@ spring:
       sqs:
         queue-name: queue
   kafka:
-    bootstrap-servers: kafka:9092
+    bootstrap-servers:
+      - b-1.sommsk.0hsy6v.c4.kafka.ap-northeast-2.amazonaws.com:9098
+      - b-2.sommsk.0hsy6v.c4.kafka.ap-northeast-2.amazonaws.com:9098
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
     consumer:
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    properties:
+      security.protocol: SASL_SSL
+      sasl.mechanism: AWS_MSK_IAM
+      sasl.jaas.config: software.amazon.msk.auth.iam.IAMLoginModule required;
 aws:
   noti:
     region: ap-northeast-2
