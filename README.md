@@ -99,7 +99,7 @@
 | 대기열에서 유저 순위 반환 | /queues/{queue}/users/{email}/rank | GET |
 | 예약 페이지 진입 가능 여부 반환 | /queues/{queue}/users/{email}/allowed | GET |
 | 대기열 탈퇴 | /queues/{queue}/users/{email}/leave | DELETE |
-| 대기 완료열 탈퇴 | /queues/{queue}/users/{email}/leave-proceed | DELETE |
+| 대기완료열 탈퇴 | /queues/{queue}/users/{email}/leave-proceed | DELETE |
 
 
 <br/>
@@ -207,7 +207,7 @@ AWS Cognito는 사용자 인증, 권한 부여, 사용자 관리를 위한 클�
 
 - 최대 사용자: 1000명
 - 램프 업: 1000명의 사용자에 도달할 때까지 30초마다 100명의 사용자 추가
-- 테스트 시나리오: 대기열 입장 → 5초 마다 rank 응답 반환 → 대기 완료 열로 이동 → 타겟 페이지로 이동 후 대기 완료 열에서 제거(사용자 점차 감소)
+- 테스트 시나리오: 대기열 입장 → 5초 마다 rank 응답 반환 → 대기완료 열로 이동 → 타겟 페이지로 이동 후 대기완료 열에서 제거(사용자 점차 감소)
 
 <img src="https://github.com/user-attachments/assets/325a1cc4-141e-418a-9f63-9eb4e8a7e4b7">
 
