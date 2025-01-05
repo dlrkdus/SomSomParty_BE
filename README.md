@@ -44,16 +44,26 @@
 - EC2, RDS, ElasticCache 와 같은 리소스는 멀티 AZ 배포를 해 단일 장애점을 방지
 - 데이터베이스와 브로커는 EC2와 다른 프라이빗 서브넷에 배치함으로써 EC2로만 접근이 가능해 보안이 향상
 
+
 <br/>
 
-# CI/CD
 
+# CI/CD
+## Back-End
 ![image](https://github.com/user-attachments/assets/9e189e86-3002-415f-916c-6c47c2917f64)
 ![image](https://github.com/user-attachments/assets/06a1b010-6010-460a-b3ee-1c4803f59ffd)
 
 - Github Action, AWS ECR, Code Deploy를 활용한 Blue/Green 무중단 배포 파이프라인 구성
 - Blue/Green이란 대체 인스턴스(Green)를 생성해 배포하는 과정에서 원본 인스턴스(Blue)를 유지하고, 배포가 완료되면 트래픽을 전환한 후 Blue 그룹을 안전히 제거함으로써 배포 과정에서 서버가 중단되지 않는 배포 방식
 - 여러 명이 동시에 작업 중일 때도 배포로 인해 서버가 중단되지 않아 개발 효율이 증진됨
+
+## Front-End
+![image](https://github.com/user-attachments/assets/dd198a96-5e3e-45f3-abce-e863d62940e5)
+- 정적 파일(S3 + CloudFront)은 CI/CD 파이프라인에서 GitHub Actions를 활용해 자동으로 S3에 업로드하고, CloudFront의 캐시를 무효화하는 방식으로 무중단 배포를 구현
+- 백엔드 서버(다른 origin)로 요청을 날릴 수 없기 때문에, Origins 설정에 ACM을 적용한 Application Load Balancer(이하 ALB)를 연결해 주고 요청은 ALB를 통해 EC2로 전달하도록 설정하여 Mixed Content 에러 해결
+
+
+<br/>
 
 
 # Back-End
@@ -119,7 +129,7 @@ AWS Cognito는 사용자 인증, 권한 부여, 사용자 관리를 위한 클�
 <br/>
 
 
-## 대기열 서비스
+## 대기열 시스템
 ### AWS SQS + Redis를 이용한 대기열 시스템
 
 - 대기열 시스템은 클라이언트가 요청을 보낼 때 이를 차례대로 처리함으로써 서버 과부하를 방지하고 안정적인 서비스를 제공
@@ -128,14 +138,14 @@ AWS Cognito는 사용자 인증, 권한 부여, 사용자 관리를 위한 클�
 <br/>
 
 **Redis** 
-- 대기열 순서 관리와 대기 중인 유저들의 상태를 실시간으로 처리하는 역할을 담당
-- 유저들의 대기 순위를 효율적으로 관리
+- 실시간 대기열 순서 관리
+- 유저들의 대기 상태 관리
 
 <br/>
 
 **Redis Sorted Set이란?**
-- Sorted Set은 key 하나에 여러 개의 score와 value로 구성하는 자료구조
-- Value는 score로 sort되며 중복되지 않음
+- Sorted Set은 key 하나에 여러 개의 score와 value로 구성되는 자료구조
+- value는 score로 sort되며 중복되지 않음
 
 <br/>
 
@@ -147,8 +157,8 @@ AWS Cognito는 사용자 인증, 권한 부여, 사용자 관리를 위한 클�
 <br/>
 
 **SQS**
-- 대기 처리와 관련된 메시지를 비동기적으로 처리하는 역할을 담당
-- 대기열의 상태 변화를 큐를 통해 안정적으로 처리
+- 대기 처리와 관련된 메시지를 비동기적으로 처리
+- 대기열의 상태 변화를 안정적이고 효율적으로 관리
 <img src="https://github.com/user-attachments/assets/f82678d5-8376-41ba-9f04-73b5d351e445">
 
 <br/>
@@ -174,6 +184,7 @@ AWS Cognito는 사용자 인증, 권한 부여, 사용자 관리를 위한 클�
     - 유저가 재요청을 하면, 먼저 해당 유저가 대기열에 있는지 확인하고, 대기열에 있다면  대기표(대기 순위)를 반환
 - 대기열에서 유저 스캔 및 입장 허용:
     - 일정 시간(SQS의 지연 시간)이 지난 후, SQS로부터 응답이 오면 대기열에서 유저들을 스캔하여 순차적으로 10명씩 대기 완료 열로 이동
+> 서버 부하를 줄이기 위해서 10개씩 발급
 
 <br/>
 
@@ -183,14 +194,15 @@ AWS Cognito는 사용자 인증, 권한 부여, 사용자 관리를 위한 클�
 <br/>
 
 - 재요청 시:
-    - 유저가 대기열에 없다면, `-1`이 반환되어 유저는 대기열에 없다는 상태로 처리
-    - `-1`을 받은 유저는 대기 완료 열에서 유저의 존재 여부를 다시 확인하기 위한 요청을 보냄
-    - 대기 완료 큐에 유저가 존재한다면, 해당 유저는 대기열을 통과했음을 의미하므로 예약 페이지로 이동하여 예약 진행 가능
+    - 유저가 대기열에 없다면, `-1`이 반환되어 유저는 대기열에 없는 상태로 처리
+    - `-1`을 받은 유저는 대기완료 열에 유저의 존재 여부를 다시 확인하기 위한 요청을 보냄
+    - 대기완료 큐에 유저가 존재한다면, 해당 유저는 대기열을 통과했음을 의미하므로 예약 페이지로 이동하여 예약 진행 가능
+
 
 <br/>
 
-<img src="https://github.com/user-attachments/assets/35a4e982-ffe3-4267-bdcf-31314f5c5919">
 
+## 예약 기능
 
 ### 비관적 락(Pessimistic Lock) 적용
 ```java
@@ -212,11 +224,9 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
 - 공유 자원인 Ticket를 `TicketRepository`에서 불러올 때, `@Lock` 어노테이션을 사용하여 비관적 쓰기 락(PESSIMISTIC_WRITE LOCK)을 적용
 - 이를 통해 한 트랜잭션이 이 Ticket를 읽고 수정하는 동안 다른 트랜잭션이 접근하지 못하게 하여 동시성 문제를 방지하고, 데이터의 무결성을 유지
 
-
 <br/>
 
-
-## 채팅 시스템
+<img src="https://github.com/user-attachments/assets/35a4e982-ffe3-4267-bdcf-31314f5c5919">
 
 
 <br/>
@@ -300,13 +310,12 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
 <img src="https://github.com/user-attachments/assets/ab2cbe4a-e505-4729-8aad-200a6cc8838b">
 
 
-<br/><br/>
+<br/>
 
 
 ## 부하 테스트
 > k6
 
-k6 run 파일명
 - 최대 사용자: 1000명
 - 램프 업: 1000명의 사용자에 도달할 때까지 30초마다 100명의 사용자 추가
 - 테스트 시나리오: 대기열 입장 → 5초 마다 rank 응답 반환 → 대기 완료 열로 이동 → 타겟 페이지로 이동 후 대기 완료 열에서 제거(사용자 점차 감소)
@@ -317,12 +326,16 @@ k6 run 파일명
 
 - 결과
     - 평균 응답 시간: 1.28s
-        - 응답 시간이 9.55s까지 늘어날 수 있다는 점이 있음. 성능 최적화 필요
+        - 응답 시간이 9.55s까지 늘어날 수 있다는 점이 있음
     - 요청 실패율: 0%
     - 지연 시간 = 1.28초 - 1.27초 = 0.01초
         - 네트워크 지연 등을 포함한 최대 시간으로, 0.01초로 짧은 것으로 나타남
     - 처리량 = 56,045 / 308.8 ≈ 181.48 RPS
         - 낮은 처리량 개선 필요 - 불필요한 반복 요청 줄이기(캐싱 or 웹소켓을 사용해 서버에서 실시간으로 업데이트), 서버 성능 최적화 필요
+
+
+<br/>
+
 
 # 채팅 시스템
 
