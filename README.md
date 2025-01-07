@@ -19,7 +19,7 @@
 
 ## 기술 스택
 - `Tech Stack`
-  - Spring Boot3, JPA, AWS Cognito, AWS SQS, Apache Kafka, Stomp, Redis, FCM, AWS EventBridge, AWS SNS, AWS SQS
+  - Spring Boot3, JPA, Apache Kafka, Stomp, Redis, FCM, AWS EventBridge, AWS SNS, AWS SQS
 - `DB`
   - AWS RDS(MySQL), AWS ElastiCache, DynamoDB
 - `DevOps`
