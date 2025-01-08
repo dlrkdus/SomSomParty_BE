@@ -1,10 +1,6 @@
 # 서비스 소개
 사용자가 축제를 쉽고 직관적으로 예약하고, 참여자들과 정보를 공유하며 실시간 소통할 수 있는 종합 축제 예약 플랫폼
 
-
-<br/>
-
-
 ## 서비스 주요 기능
 1. 회원가입, 로그인
 2. 축제 정보 제공
@@ -14,11 +10,6 @@
 6. 마이페이지
 7. 축제 알림 
 
-
-<br/>
-
-## ERD
-<img src="https://github.com/user-attachments/assets/ce39f713-489f-46b5-b8aa-b778a05ecf27" />
 
 <br/>
 
@@ -32,7 +23,18 @@
   - AWS EC2 Auto Scaling, AWS ALB, AWS VPC
 - DevOps
   - AWS Code Deploy, AWS ECR, AWS S3, Github Actions, Docker
+ 
+## 담당 업무 
+- 아키텍처 설계
+- 인프라 프로비저닝
+- CI/CD 파이프라인 구축
+- 채팅 시스템 구현
 
+
+<br/>
+
+## ERD
+<img src="https://github.com/user-attachments/assets/ce39f713-489f-46b5-b8aa-b778a05ecf27" />
 
 <br/>
 
