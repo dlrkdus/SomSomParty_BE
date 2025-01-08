@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+
+
+  spring-app:
+    image: 084828566517.dkr.ecr.ap-northeast-2.amazonaws.com/somparty:latest
+    restart: always
+    container_name: spring-app
+    ports:
+      - '8080:8080'
+    volumes:
+      - ./application.yml:/app/config/application.yml
+    networks:
+      - app_network
+
+networks:
+  app_network:
+    driver: bridge
