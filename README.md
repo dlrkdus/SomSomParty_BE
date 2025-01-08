@@ -25,7 +25,7 @@
 
 ## 기술 스택
 - Tech Stack
-  - Spring Boot, Spring JPA, Apache Kafka, Stomp, FCM, AWS EventBridge, AWS SNS, AWS SQS
+  - Spring Boot, Spring JPA, Apache Kafka, Redis, Stomp, FCM, AWS EventBridge, AWS SNS, AWS SQS
 - DB
   - AWS RDS(MySQL), AWS ElastiCache, DynamoDB
 - Infra
